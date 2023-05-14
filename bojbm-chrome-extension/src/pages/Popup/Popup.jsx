@@ -7,7 +7,6 @@ const Popup = () => {
   return (
     <div className="App">
       <Navigation />
-      <button id="#sign-in"></button>
     </div>
   );
 };
