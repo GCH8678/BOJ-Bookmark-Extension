@@ -41,21 +41,21 @@ public class TokenProvider {
         long now = (new Date()).getTime();
 
 
-        Date tokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+        Date Expiration = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
 
-        System.out.println(tokenExpiresIn);
+        System.out.println(Expiration);
 
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
-                .setExpiration(tokenExpiresIn)
+                .setExpiration(Expiration)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
-                .tokenExpiresIn(tokenExpiresIn.getTime())
+                .Expiration(Expiration.getTime())
                 .build();
     }
     public Authentication getAuthentication(String accessToken) {

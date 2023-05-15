@@ -1,6 +1,6 @@
 package com.ch.bojbm.global.auth.config;
 
-import com.ch.bojbm.global.auth.filter.JwtFilter;
+import com.ch.bojbm.global.auth.util.filter.JwtFilter;
 import com.ch.bojbm.global.auth.token.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;

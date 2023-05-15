@@ -1,4 +1,4 @@
-package com.ch.bojbm.global.auth.filter;
+package com.ch.bojbm.global.auth.util.filter;
 
 import com.ch.bojbm.global.auth.token.TokenProvider;
 import jakarta.servlet.FilterChain;

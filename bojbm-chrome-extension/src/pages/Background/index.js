@@ -1,21 +1,107 @@
 
-chrome.runtime.onInstalled.addListener((request,sender,sendResponse)=>{
-    // accessToken과 refreshToken 만료가 안됬으면 로그인 시도
-    const message = {request,sender,sendResponse}
 
-    if(request.method===''){
 
+    
+//TODO : 로그인 상태 반환( API에 요청을 보냈을때 만료 401 에러 반환받은 경우 로그아웃 -> if( error.response?.status===401 && error.response?.data.result===="TOKEN INVALID"))
+
+
+const logoutMessage = ()=>{
+    console.log("logoutMessage From background")
+    chrome.runtime.sendMessage({action:"logoutInBackground"});
+}
+
+const loginMessage = ()=>{
+    console.log("loginMessage From background")
+    chrome.runtime.sendMessage({action:"loginInBackground"});
+}
+
+
+chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
+    //로그인
+    if (request.action === 'login'){
+        console.log("login Listener In Background")
+        const {email,password} = request.data
+        getAuth(email,password)
+        .then((res)=>{ // res는 data를 받아온거 <- res.json()
+            console.log(res)
+            chrome.storage.sync.set('access-token',res);
+            loginMessage();
+        })
+        .catch((err)=>{
+            sendResponse(err.message)
+        })
+        return true
+    }
+
+    if (request.action === "logout"){
+        chrome.storage.sync.remove('access-token');
+        logoutMessage();
+        return true
+    }
+
+
+    //bookmark추가
+    if (request.action === 'addBookmark'){
+        const {problemId} = request.data
+        addBookmark(problemId)
+        .then((res)=>{ // res는 data를 받아온거 <- res.json() => 무슨 로직을 더 해줘야하지? -> 
+            
+            const user = res.result.user
+            chrome.storage.sync.set({user})
+            sendResponse('')
+        })
+        .catch((err)=>{
+            sendResponse(err.message)
+        })
+        return true
     }
 
 })
 
-chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
-    const message = {request,sender,sendResponse}
-
-    if(request.method === 'addBookmark'){
-
+//로그인 요청
+const getAuth = async (email,password)=>{
+    const settings = {
+        method: 'POST',
+        body: JSON.stringify({
+            email,
+            password,
+        }),
+        headers: { 'Content-Type': 'application/json' }
     }
-});
+    try{
+        const fetchResponse = await fetch(
+            "http://localhost:8080/api/auth/login",
+            settings
+        )
+        const data = await fetchResponse.json()
+        return data;
+    }catch(err){
+        return err
+    }
+}
+
+
+// const addBookmark = async(problemId)=>{
+//     const settings ={
+//         method: 'Post',
+//         headers:{
+//             'Authorization': "Bearer "+chrome.storage.sync.get("access_token")
+//         },
+//         body: JSON.stringify({
+//             problemId
+//         }),
+//     }
+//     try{
+//         const fetchResponse = await fetch(
+//             "http://localhost:8080/api/bookmark/add",
+//             settings
+//         )
+//         const data = await fetchResponse.json()
+//         return data;
+//     }catch(err){
+//         return err
+//     }
+// }
 
 
 // 다른 js에서 메시지 보내는 방법

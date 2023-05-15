@@ -25,7 +25,7 @@ public class Bookmark extends BaseEntity {
     private Users user;
 
     private Integer problemNum;
-    private String memo;
+    //private String memo;
     //private SetPeriod setPeriod; // TODO : 프론트에서 구현하고 여기에 필요 하지 않을 수 있음
     private LocalDate notificationDate;
 

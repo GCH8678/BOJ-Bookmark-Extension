@@ -6,16 +6,27 @@ import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 
 const Navigation = () => {
+  const logout = () => {
+    chrome.runtime.sendMessage(
+      {
+        action: 'logout',
+      },
+      (res) => {
+        console.log(res);
+      }
+    );
+  };
   return (
     <>
       <Navbar bg="primary" variant="dark">
         <Container>
           <Navbar.Brand href="#home">B</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link>BOJ Bookmark</Nav.Link>
+            <Nav.Link>Bookmark</Nav.Link>
             <Button
               variant="outline-light"
               style={{ position: 'absolute', right: 0, marginRight: '10px' }}
+              onClick={logout}
             >
               Logout
             </Button>{' '}
