@@ -1,4 +1,7 @@
 
+
+
+
 const getAuth = async (email,password)=>{
     console.log("getAuth 작동")
     const settings = {
@@ -39,6 +42,7 @@ const getAuth = async (email,password)=>{
 
 //     //chrome.runtime.sendMessage({action:"loginInBackground"});
 // }
+
 
 
 chrome.runtime.onInstalled.addListener(()=>{
