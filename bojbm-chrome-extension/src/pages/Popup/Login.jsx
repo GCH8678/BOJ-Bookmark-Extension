@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Login = () => {
+const Login = ({ setLoggedIn }) => {
   const [Email, setEmail] = useState('');
   const [Password, setPassword] = useState('');
 
@@ -14,17 +14,17 @@ const Login = () => {
   const onSubmitHandler = (event) => {
     console.log('Email', Email);
     console.log('Password', Password);
-    let body = {
-      email: Email,
-      password: Password,
-    };
-    console.log(body);
+    const email = Email;
+    const password = Password;
+
     chrome.runtime.sendMessage(
       {
         action: 'login',
-        data: body,
+        data: { email, password },
       },
       (res) => {
+        chrome.storage.sync.set({ isLoggedIn: true });
+        setLoggedIn(true);
         console.log(res);
       }
     );
@@ -33,11 +33,9 @@ const Login = () => {
   return (
     <>
       <div className="Auth-form-container">
-        <form className="Auth-form" onSubmit={onSubmitHandler}>
+        <div className="Auth-form">
           <div className="Auth-form-content">
-            <h3 className="Auth-form-title">Sign In</h3>
             <div className="form-group mt-3">
-              <label>Email address</label>
               <input
                 type="email"
                 className="form-control mt-1"
@@ -47,7 +45,6 @@ const Login = () => {
               />
             </div>
             <div className="form-group mt-3">
-              <label>Password</label>
               <input
                 type="password"
                 className="form-control mt-1"
@@ -57,12 +54,16 @@ const Login = () => {
               />
             </div>
             <div className="d-grid gap-2 mt-3">
-              <button type="submit" className="btn btn-primary">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                onClick={onSubmitHandler}
+              >
                 Login
               </button>
             </div>
           </div>
-        </form>
+        </div>
       </div>
     </>
   );

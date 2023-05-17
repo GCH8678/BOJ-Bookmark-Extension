@@ -5,8 +5,10 @@ import Button from 'react-bootstrap/Button';
 
 
 
-const addBookmark = (problemId) =>{
-    chrome.runtime.sendMessage({action:"addBookmark",problemId:problemId})
+
+const addBookmark = () =>{
+    chrome.tabs.sendMessage(tabs[0],{action:"addBookmark",problemId:problemId},(response)=>console.log(response))
+    console.log("save");
 }
 
 
@@ -23,6 +25,7 @@ const BookmarkButton = ()=>{
 
 
 console.log("content script work")
+
 
 const url = document.location.href
 const problemId = url.replace(/[^0-9]/g,"");

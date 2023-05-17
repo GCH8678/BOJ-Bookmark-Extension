@@ -5,14 +5,18 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 
-const Navigation = () => {
+const Navigation = ({ setLoggedIn }) => {
   const logout = () => {
     chrome.runtime.sendMessage(
       {
         action: 'logout',
       },
       (res) => {
+        //props.setLoggedIn(false);
         console.log(res);
+        chrome.storage.sync.set({ isLoggedIn: false }, (res) => {
+          setLoggedIn(false);
+        });
       }
     );
   };

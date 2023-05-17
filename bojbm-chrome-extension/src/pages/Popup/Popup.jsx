@@ -6,28 +6,26 @@ import Login from './Login';
 import TodayProblem from './TodayProblem';
 
 const Popup = () => {
+  //const [isLoggedIn, setLoggedIn] = useState();
+
   const [isLoggedIn, setLoggedIn] = useState(false);
-
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    //로그인
-    if (request.action == 'logoutInBackground') {
-      setLoggedIn[false];
-    }
-    if (request.action == 'loginInBackground') {
-      setLoggedIn[true];
-    }
+  useEffect(() => {
+    chrome.storage.sync.get('isLoggedIn', (res) => console.log(res.isLoggedIn));
   });
-
+  // chrome.storage.sync.get('isLoggedIn', (res) => {
+  //   setLoggedIn(res);
+  //   console.log('setLoggedIn : ' + res);
+  // });
   return (
     <>
       <div className="App">
         {isLoggedIn && (
           <>
-            <Navigation />
+            <Navigation setLoggedIn={setLoggedIn} />
             <TodayProblem />
           </>
         )}
-        {!isLoggedIn && <Login />}
+        {!isLoggedIn && <Login setLoggedIn={setLoggedIn} />}
       </div>
     </>
   );
