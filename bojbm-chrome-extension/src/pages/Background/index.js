@@ -1,4 +1,10 @@
 
+const isLoggedIn=(sendResponse)=>{
+    chrome.storage.sync.get(['userStatus'],(response)=>{
+        const error = chrome.runtime.lastError;
+        sendResponse(error);
+    })
+}
 
 
 
@@ -54,28 +60,29 @@ chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
     if (request.action === "login"){
         console.log("login process In background");
         const {email,password} = request.data;
-        getAuth(email,password)
+        getAuth(email,password) //getAuth 비동기
         .then((res)=>{ // res는 data를 받아온거 <- res.json()
             //console.log(res);
-            chrome.storage.sync.set({accessToken:res}, function(){
+            chrome.storage.sync.set({accessToken:res}, ()=>{
                 console.log(res);
                 sendResponse(true);
-            return true;
             });
         })
         .catch((err)=>{
             console.log(err);
             sendResponse(false);
-            return true;
         })
+        return true;
     }
 
     if (request.action === "logout"){
         // chrome.storage.sync.remove('access-token');
         // logoutMessage();
-        chrome.storage.sync.set({isLoggedIn:false});
-        sendResponse(false);
+        chrome.storage.sync.set({isLoggedIn:false},(res)=>{
+            sendResponse(false);
+        });
         return true
+
     }
 
 

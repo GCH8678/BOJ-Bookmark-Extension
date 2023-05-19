@@ -23,9 +23,10 @@ const Login = ({ setLoggedIn }) => {
         data: { email, password },
       },
       (res) => {
-        chrome.storage.sync.set({ isLoggedIn: true });
-        setLoggedIn(true);
-        console.log(res);
+        chrome.storage.sync.set({ isLoggedIn: true }, () => {
+          setLoggedIn(true);
+          console.log(res);
+        });
       }
     );
   };
