@@ -24,6 +24,7 @@ public class BookmarkController {
     public ResponseEntity BookmarkListResponseDto(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(bookmarkService.getBookmarkList(user));
     }
+
     /**
      * 북마크 등록
      *
@@ -36,6 +37,18 @@ public class BookmarkController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * 북마크 여부 확인
+     *
+     * @param user
+     * @param problemNum
+     * @return message
+     */
+    @GetMapping("/{problemNum}")
+    public ResponseEntity checkBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal User user){
+        boolean isBookmarked = bookmarkService.checkBookmark(user,problemNum);
+        return ResponseEntity.ok(isBookmarked);
+    }
 
     /**
      * 북마크 취소

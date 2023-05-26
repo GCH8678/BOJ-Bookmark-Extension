@@ -25,16 +25,22 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
 
-    public UsersResponseDto signup(UsersRequestDto requestDto) {
-        if (memberRepository.existsByEmail(requestDto.getEmail())) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다");
-        }
-
-        Users users = requestDto.toEntity(passwordEncoder);
-        return UsersResponseDto.of(memberRepository.save(users));
-    }
+//    public UsersResponseDto signup(UsersRequestDto requestDto) {
+//        if (memberRepository.existsByEmail(requestDto.getEmail())) {
+//            throw new RuntimeException("이미 가입되어 있는 유저입니다");
+//        }
+//
+//        Users users = requestDto.toEntity(passwordEncoder);
+//        return UsersResponseDto.of(memberRepository.save(users));
+//    }
 
     public TokenDto login(UsersRequestDto requestDto) {
+
+        if(!memberRepository.existsByEmail(requestDto.getEmail())){
+            Users users = requestDto.toEntity(passwordEncoder);
+            memberRepository.save(users);
+        }
+
         UsernamePasswordAuthenticationToken authenticationToken = requestDto.toAuthentication();
 
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);

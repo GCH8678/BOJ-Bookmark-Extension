@@ -60,6 +60,18 @@ public class BookmarkService {
         }else throw new RuntimeException("이미 존재하는 북마크입니다.");
     }
 
+    public boolean checkBookmark(User user, Integer problemNum){
+        Users currentUsers = getUsers(user.getUsername());
+        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUser(problemNum,currentUsers);
+
+        if(savedBookmark == null){
+            return false;
+        }else{
+            return true;
+        }
+
+    }
+
     public void deleteBookmark(User user, Integer problemNum) {
         
         Users currentUsers = getUsers(user.getUsername());

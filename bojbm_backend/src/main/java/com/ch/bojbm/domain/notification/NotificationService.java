@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Service
 public class NotificationService {
 
+
 //    @Scheduled(cron="0 0 09 * * ?") // 매일 9시 마다 알림 보내기
     public LocalDate sendNotification(){
 

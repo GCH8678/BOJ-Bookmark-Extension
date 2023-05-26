@@ -30,7 +30,6 @@ public class Bookmark extends BaseEntity {
     private LocalDate notificationDate;
 
 
-
     //OneToMany
     //private List<Notification> notifications
     //TODO : 알람을 위한 분류 ( 내일,일주일 ,이주일 , 다음달 ) => ()
