@@ -6,10 +6,24 @@ const isLoggedIn=(sendResponse)=>{
     })
 }
 
+// .then((res)=>{ // res는 data를 받아온거 <- res.json()
+//     //console.log(res);
+//     sendResponse(res)
+//     // chrome.storage.sync.set({accessToken:res}, ()=>{
+//     //     console.log(res);
+//     //     sendResponse(true);
+//     // });
+// })
+// .catch((err)=>{
+//     console.log(err);
+//     sendResponse(false);
+// })
 
 
-const getAuth = async (email,password)=>{
-    console.log("getAuth 작동")
+
+
+const login = async (email,password,sendResponse)=>{
+    console.log("getAuth method")
     const settings = {
         method: 'POST',
         body: JSON.stringify({
@@ -18,18 +32,26 @@ const getAuth = async (email,password)=>{
         }),
         headers: { 'Content-Type': 'application/json' }
     }
-    try{
-        const fetchResponse = await fetch(
+    fetch(
             "http://localhost:8080/api/auth/login",
             settings
-        )
-        const data = await fetchResponse.json()
-        console.log(data + "<- in getAuth");
-        return data;
-    }catch(err){
-        console.log(err +"<- err in getAuth");
-        return err
-    }
+    ).then((res)=>{
+        if(res.ok){
+            console.log(res + "<- res in getAuth fetch");
+            const data = res.json()
+            console.log(data+ "<- res.json() in getAuth fetch");
+            chrome.storage.sync.set({accessToken:data}, ()=>{
+                console.log(data+"<- set data in getAuth fetch chrome storage api ");
+                sendResponse(true);
+            })
+        }else{
+            throw new Error("Invalid login attempt");
+        }
+    })
+    .catch((error)=>{
+        console.log(error <-"<- err in getAuth")
+        sendResponse(false)
+    })
 }
     
 //TODO : 로그인 상태 반환( API에 요청을 보냈을때 만료 401 에러 반환받은 경우 로그아웃 -> if( error.response?.status===401 && error.response?.data.result===="TOKEN INVALID"))
@@ -60,24 +82,14 @@ chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
     if (request.action === "login"){
         console.log("login process In background");
         const {email,password} = request.data;
-        getAuth(email,password) //getAuth 비동기
-        .then((res)=>{ // res는 data를 받아온거 <- res.json()
-            //console.log(res);
-            chrome.storage.sync.set({accessToken:res}, ()=>{
-                console.log(res);
-                sendResponse(true);
-            });
-        })
-        .catch((err)=>{
-            console.log(err);
-            sendResponse(false);
-        })
+        login(email,password,sendResponse) //getAuth 비동기
         return true;
     }
 
     if (request.action === "logout"){
         // chrome.storage.sync.remove('access-token');
         // logoutMessage();
+        console.log("logout method")
         chrome.storage.sync.set({isLoggedIn:false},(res)=>{
             sendResponse(false);
         });
