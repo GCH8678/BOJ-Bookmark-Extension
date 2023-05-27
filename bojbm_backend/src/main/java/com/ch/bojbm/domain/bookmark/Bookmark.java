@@ -29,13 +29,14 @@ public class Bookmark extends BaseEntity {
     //private SetPeriod setPeriod; // TODO : 프론트에서 구현하고 여기에 필요 하지 않을 수 있음
     private LocalDate notificationDate;
 
+    //private Boolean isChecked;  // TODO : 이후 웹앱등에서 확인 여부, 풀이 여부를 확인할 때를 위해 Check 여부 항목에 대하여 구현해야 함
 
     //OneToMany
     //private List<Notification> notifications
     //TODO : 알람을 위한 분류 ( 내일,일주일 ,이주일 , 다음달 ) => ()
     // 내일,일주일,이주일,다음달의 기준 ==> 무조건 오전 9시
     // 알람 기준은 modifiedAt 기준 + 이후 setperiod를 1일로 바꾸는 식으로
-    // modifiedAt 리셋 + 1일로 다음날 다시 알림
+    // modifiedAt 리셋 + 1일로 다음날 다시 알림 ( 보류 )
     // => setPeriod와 modifiedAt, => 이후 NOTIFICATION에 대한 Entity를 따로 분리
 
     public void setNotificationDate(LocalDate notificationDate){

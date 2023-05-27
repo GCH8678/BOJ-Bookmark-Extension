@@ -90,6 +90,72 @@ const addBookmark = async(problemId,sendResponse)=>{
 
 }
 
+const isBookmarked = (problemId,sendResponse)=>{
+    console.log("isBookmarked Method 작동")
+    chrome.storage.sync.get("accessToken")
+    .then((token)=>{
+
+        const settings ={
+            method: 'Get',
+            headers:{
+            'Authorization': 'Bearer '+token.accessToken.accessToken,
+            'Content-Type': 'application/json'
+            },
+        }
+
+
+        fetch(
+                "http://localhost:8080/api/bookmark/"+problemId,
+                settings
+        ).then((res)=>{
+            if(res.ok){
+                console.log("res.ok in isBookmarked fetch");
+                res.json().then((res)=>sendResponse(res.isBookmarked))
+            }else{
+                throw new Error("Invalid isBookmarked request");
+            }
+        })
+    })
+    .catch((err)=>{
+        console.log(err);
+        sendResponse(false);
+    })
+}
+
+const getTodayProblemList = (today,sendResponse) =>{
+    console.log("getTodayProblemList Method 작동")
+    chrome.storage.sync.get("accessToken")
+    .then((token)=>{
+
+        const settings ={
+            method: 'Get',
+            headers:{
+            'Authorization': 'Bearer '+token.accessToken.accessToken,
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                today
+            }),
+        }
+
+
+        fetch(
+                "http://localhost:8080/api/notification/",
+                settings
+        ).then((res)=>{
+            if(res.ok){
+                console.log("res.ok in getTodayProblemList fetch");
+                res.json().then((res)=>sendResponse(res.isBookmarked))
+            }else{
+                throw new Error("Invalid getTodayProblemList request");
+            }
+        })
+    })
+    .catch((err)=>{
+        console.log(err);
+        sendResponse(false);
+    })
+}
 
 
 
@@ -119,9 +185,20 @@ chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
 
     //bookmark 여부 확인
     if (request.action === "isBookmarked"){
+        console.log("isBookmarked Listener")
+        const {problemId} = request.data
+        isBookmarked(problemId,sendResponse)
         return true;
     }
 
+    //오늘 풀어야할 문제 정보 받기
+    if (request.action === "getTodayProblemList"){
+        console.log("getTodayProblemList Listener")
+        // 오늘 날짜 정보
+        const today = new Date();
+        getTodayProblemList(today,sendResponse);
+        return true;
+    }
 })
 
 

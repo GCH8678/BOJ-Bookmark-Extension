@@ -2,6 +2,7 @@ package com.ch.bojbm.domain.notification;
 
 import com.ch.bojbm.domain.BaseEntity;
 import com.ch.bojbm.domain.bookmark.Bookmark;
+import com.ch.bojbm.domain.user.Users;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,11 @@ public class Notification extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+
+    //TODO: 이후 쿼리 최적화 해줘야 함.( Notification 엔티티 - Users)
+    @ManyToOne
+    private Users user;
 
     private LocalDate notificationDate;
 
