@@ -33,7 +33,7 @@ public class BookmarkController {
      */
     @PostMapping("")
     public ResponseEntity addBookmark(@RequestBody BookmarkCreateRequestDto bookmarkCreateRequestDto, @AuthenticationPrincipal User user){
-        bookmarkService.addBookmark(user,bookmarkCreateRequestDto.getProblemNum(),7);
+        bookmarkService.addBookmark(user,bookmarkCreateRequestDto.getProblemId(),7);
         return ResponseEntity.ok().build();
     }
 

@@ -6,11 +6,9 @@ import Login from './Login';
 import TodayProblem from './TodayProblem';
 
 const Popup = () => {
-  //const [isLoggedIn, setLoggedIn] = useState();
-
   const [isLoggedIn, setLoggedIn] = useState(false);
   useEffect(() => {
-    chrome.storage.sync.get('isLoggedIn', (res) => console.log(res.isLoggedIn));
+    chrome.storage.sync.get('isLoggedIn', (res) => setLoggedIn(res.isLoggedIn));
   });
   // chrome.storage.sync.get('isLoggedIn', (res) => {
   //   setLoggedIn(res);

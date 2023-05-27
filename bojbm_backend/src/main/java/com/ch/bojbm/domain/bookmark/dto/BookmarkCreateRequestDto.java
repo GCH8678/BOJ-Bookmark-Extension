@@ -7,5 +7,5 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class BookmarkCreateRequestDto {
-    private Integer problemNum;
+    private Integer problemId;
 }
