@@ -2,6 +2,8 @@ package com.ch.bojbm.domain.bookmark;
 
 import com.ch.bojbm.domain.bookmark.dto.BookmarkCreateRequestDto;
 import com.ch.bojbm.domain.bookmark.dto.BookmarkListResponseDto;
+import com.ch.bojbm.domain.notification.NotificationService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,6 +15,16 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class BookmarkController {
     private final BookmarkService bookmarkService;
+    private final NotificationService notificationService;
+
+
+//    /**
+//     * Email Test
+//     */
+//    @GetMapping("/test/notification")
+//    public void testMailNotification() throws MessagingException {
+//        notificationService.sendNotificationWithMail();
+//    }
 
     /**
      * 북마크 목록 조회
@@ -21,8 +33,19 @@ public class BookmarkController {
      * @return bookmarkListResponseDto
      */
     @GetMapping("/list")
-    public ResponseEntity BookmarkListResponseDto(@AuthenticationPrincipal User user){
+    public ResponseEntity getBookmarkList(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(bookmarkService.getBookmarkList(user));
+    }
+
+    /**
+     * 오늘 풀어야할 문제 목록 조회
+     *
+     * @param user
+     * @return bookmarkListResponseDto
+     */
+    @GetMapping("/list/today")
+    public ResponseEntity getTodayProblemList(@AuthenticationPrincipal User user){
+        return ResponseEntity.ok(bookmarkService.getTodayProblemList(user));
     }
 
     /**
@@ -31,6 +54,7 @@ public class BookmarkController {
      * @param bookmarkCreateRequestDto
      * @return message
      */
+    //TODO: 이후 7일이 아닌 다양한 선택지 받을 수 있게
     @PostMapping("")
     public ResponseEntity addBookmark(@RequestBody BookmarkCreateRequestDto bookmarkCreateRequestDto, @AuthenticationPrincipal User user){
         bookmarkService.addBookmark(user,bookmarkCreateRequestDto.getProblemId(),7);

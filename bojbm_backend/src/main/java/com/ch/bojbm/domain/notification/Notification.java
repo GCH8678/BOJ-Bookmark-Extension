@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -18,15 +19,24 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private LocalDate notificationDate;
+
 
     //TODO: 이후 쿼리 최적화 해줘야 함.( Notification 엔티티 - Users)
     @ManyToOne
-    private Users user;
-
-    private LocalDate notificationDate;
+    @JoinColumn(name = "users_id")
+    private Users users;
 
     //TODO : 북마크 묶음?을 날짜랑 유저를 기준으로 설정할 방법 찾아야 함.
-    @OneToMany
-    private List<Bookmark> bookmark;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="notification")
+    private List<Bookmark> bookmarks = new ArrayList<>();
+
+    public Notification(Users users, LocalDate notificationDate){
+        this.users = users;
+        this.notificationDate = notificationDate;
+    }
+    public void addBookmark (Bookmark bookmark){
+        this.bookmarks.add(bookmark);
+    }
 
 }

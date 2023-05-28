@@ -3,10 +3,11 @@ package com.ch.bojbm.domain.bookmark;
 
 import com.ch.bojbm.domain.bookmark.dto.BookmarkInListResponseDto;
 import com.ch.bojbm.domain.bookmark.dto.BookmarkListResponseDto;
+import com.ch.bojbm.domain.bookmark.dto.TodayProblemsResponseDto;
+import com.ch.bojbm.domain.notification.Notification;
+import com.ch.bojbm.domain.notification.NotificationService;
 import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.domain.user.UsersRepository;
-import com.ch.bojbm.domain.user.dto.UsersRequestDto;
-import com.ch.bojbm.domain.user.dto.UsersResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class BookmarkService {
     private final BookmarkJpaRepository bookmarkJpaRepository;
     private final UsersRepository usersRepository;
+    private final NotificationService notificationService;
 
     public BookmarkListResponseDto getBookmarkList(User user){
         Users currentUsers = getUsers(user.getUsername());
@@ -34,7 +36,7 @@ public class BookmarkService {
         Iterator<Bookmark> iterator = bookmarkJpaRepository.findAllByUser(currentUsers).iterator();
         while(iterator.hasNext()){
             Bookmark temp = iterator.next();
-            BookmarkInListResponseDto dto = BookmarkInListResponseDto.builder().problemNum(temp.getProblemNum()).notificationDate(temp.getNotificationDate()).build();
+            BookmarkInListResponseDto dto = BookmarkInListResponseDto.builder().problemNum(temp.getProblemNum()).notificationDate(temp.getNotification().getNotificationDate()).build();
             bookmarks.add(dto);
         }
         return BookmarkListResponseDto.builder()
@@ -42,20 +44,36 @@ public class BookmarkService {
                 .build();
     }
 
+    public TodayProblemsResponseDto getTodayProblemList(User user){
+        Notification todayNotification = notificationService.getTodayNotification(user);
+        List<Bookmark> bookmarks = todayNotification.getBookmarks();
+        List<Integer> problemNums = new ArrayList<>();
+        Iterator<Bookmark> iterator = bookmarks.iterator();
+        while(iterator.hasNext()){
+            Bookmark temp = iterator.next();
+            Integer dto = temp.getProblemNum();
+            problemNums.add(dto);
+        }
+        return TodayProblemsResponseDto.builder()
+                .problemNums(problemNums)
+                .build();
+    }
+
 
     public void addBookmark(User user, int problemNum, int afterDay){
 
         Users currentUsers = getUsers(user.getUsername());
-        LocalDate today = LocalDate.now();
+        LocalDate notificationDate = LocalDate.now().plusDays(afterDay);
 
         Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUser(problemNum,currentUsers);
 
         if(savedBookmark == null){
+
             Bookmark newBookmark = Bookmark.builder()
                     .problemNum(problemNum)
-                    .notificationDate(today.plusDays(afterDay))
                     .user(currentUsers)
                     .build();
+            newBookmark.setNotification(notificationService.addBookmarkInNotification(currentUsers, newBookmark, notificationDate));
             bookmarkJpaRepository.save(newBookmark);
         }else throw new RuntimeException("이미 존재하는 북마크입니다.");
     }
