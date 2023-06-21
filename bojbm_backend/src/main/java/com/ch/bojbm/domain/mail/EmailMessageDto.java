@@ -1,4 +1,4 @@
-package com.ch.bojbm.domain.notification.mail;
+package com.ch.bojbm.domain.mail;
 
 import lombok.Builder;
 import lombok.Getter;

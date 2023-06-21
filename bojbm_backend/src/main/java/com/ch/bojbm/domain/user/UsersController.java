@@ -23,8 +23,5 @@ public class UsersController {
     }
 
 
-    @PostMapping("/password")
-    public ResponseEntity<UsersResponseDto> setMemberPassword(@RequestBody ChangePasswordRequestDto request) {
-        return ResponseEntity.ok(userService.changeMemberPassword(request.getEmail(),request.getExPassword(), request.getNewPassword()));
-    }
+
 }

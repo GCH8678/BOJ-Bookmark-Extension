@@ -20,22 +20,25 @@ const Navigation = ({ setLoggedIn }) => {
       }
     );
   };
+  // 이후 Nav.Link 대신 => 다른 일자를 선택할 수 있게 ( 기본 값은 오늘 )
   return (
     <>
       <Navbar bg="primary" variant="dark">
         <Container>
           <Navbar.Brand href="#home">B</Navbar.Brand>
           <Nav className="me-auto">
-            <Nav.Link>Bookmark</Nav.Link>
+            <Nav.Link href="https://www.acmicpc.net/problemset" target="_blank">
+              Go to BOJ
+            </Nav.Link>
             <Button
               variant="outline-light"
               style={{ position: 'absolute', right: 0, marginRight: '10px' }}
               onClick={logout}
             >
               Logout
-            </Button>{' '}
+            </Button>
           </Nav>
-        </Container>{' '}
+        </Container>
       </Navbar>
     </>
   );

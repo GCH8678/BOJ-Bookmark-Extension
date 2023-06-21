@@ -1,10 +1,8 @@
 package com.ch.bojbm.domain.notification;
 
 import com.ch.bojbm.domain.bookmark.Bookmark;
-import com.ch.bojbm.domain.bookmark.dto.BookmarkInListResponseDto;
-import com.ch.bojbm.domain.bookmark.dto.BookmarkListResponseDto;
-import com.ch.bojbm.domain.notification.mail.EmailMessageDto;
-import com.ch.bojbm.domain.notification.mail.EmailService;
+import com.ch.bojbm.domain.mail.EmailMessageDto;
+import com.ch.bojbm.domain.mail.EmailService;
 import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.domain.user.UsersRepository;
 import jakarta.mail.MessagingException;
@@ -32,6 +30,13 @@ public class NotificationService {
     private final EmailService emailService;
 
 
+    @Transactional(readOnly = true)
+    public void checkAndDeleteNotification(Notification notification){
+        Set<Bookmark> bookmarksAtNotificationDate = notification.getBookmarks();
+        if(bookmarksAtNotificationDate.size()==1){
+            notificationRepository.deleteById(notification.getId());
+        }
+    }
 
     @Transactional(readOnly = true)
     public Notification getTodayNotification(User user){
@@ -55,21 +60,22 @@ public class NotificationService {
     }
 
 
-    @Scheduled(cron="0 42 05 * * ?")  // 매일 9시 마다 알림
+    //TODO : 해당 notification이 갱신될때 todayList도 갱신하게 할지 고민해 봐야 함
+    @Scheduled(cron="0 50 01 * * ?")  // 매일 9시 마다 알림 초 분 시간 일 월 요일
     public void sendNotificationWithMail() throws MessagingException { // Mail 알림
         LocalDate today = LocalDate.now();
         List<Notification> notifications = getTodayNotifications(today);
 
         for(Notification notification : notifications){
-            HashMap<String, List<Bookmark>> emailValues = new HashMap<>();
-            List<Bookmark> bookmarks = notification.getBookmarks();
+            HashMap<String, Set<Bookmark>> emailValues = new HashMap<>();
+            Set<Bookmark> bookmarks = notification.getBookmarks();
             emailValues.put("bookmarks", bookmarks);
             EmailMessageDto emailMessageDto = EmailMessageDto.builder()
                     .templateName("mail")
                     .subject(notification.getNotificationDate().toString() + " 일자 북마크 알림")
                     .to(notification.getUsers().getEmail())
                     .build();
-            emailService.sendMail(emailMessageDto,emailValues);
+            emailService.sendMailWithBookmarks(emailMessageDto,emailValues);
         }
 
     }
@@ -90,4 +96,9 @@ public class NotificationService {
         } else throw new EntityNotFoundException("유저를 찾을 수 없습니다.");
     }
 
+    @Transactional
+    public void deleteNotification(Notification notification) {
+
+        notificationRepository.delete(notification);
+    }
 }

@@ -10,7 +10,6 @@ public interface NotificationRepository extends JpaRepository<Notification,Long>
 
     Notification findNotificationByUsersAndNotificationDate(Users users, LocalDate notificationDate);
 
-    List<Notification> findAllByUsers(Users users);
     List<Notification> findAllByNotificationDate(LocalDate notificationDate);
 
 }

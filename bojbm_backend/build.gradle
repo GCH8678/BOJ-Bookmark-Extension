@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ch'
-version = '0.0.1-SNAPSHOT'
+version = '1.0.0'
 sourceCompatibility = '17'
 
 configurations {
@@ -40,7 +40,12 @@ dependencies {
 
 	//DB
 	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'com.mysql:mysql-connector-j'
+//	runtimeOnly 'com.mysql:mysql-connector-j'
+	runtimeOnly 'mysql:mysql-connector-java:8.0.32'
+
+
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	//jwt 사용
 

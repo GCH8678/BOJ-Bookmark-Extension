@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,7 +29,7 @@ public class Notification extends BaseEntity {
 
     //TODO : 북마크 묶음?을 날짜랑 유저를 기준으로 설정할 방법 찾아야 함.
     @OneToMany(fetch = FetchType.LAZY, mappedBy="notification")
-    private List<Bookmark> bookmarks = new ArrayList<>();
+    private Set<Bookmark> bookmarks = new HashSet<>();
 
     public Notification(Users users, LocalDate notificationDate){
         this.users = users;

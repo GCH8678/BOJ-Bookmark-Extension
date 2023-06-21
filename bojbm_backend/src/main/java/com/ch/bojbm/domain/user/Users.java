@@ -28,7 +28,7 @@ public class Users extends BaseEntity{
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    @OneToMany(mappedBy= "user",cascade=CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy= "users",cascade=CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @OneToMany(mappedBy = "users",cascade=CascadeType.ALL, orphanRemoval = true)

@@ -1,8 +1,36 @@
+server:
+  port: 8080
+
 spring:
-  profiles:
-    include: connection,security
   thymeleaf:
     cache: false
     check-template-location: true
     prefix: classpath:/templates/
     suffix: .html
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 'gch8678'
+
+
+  profiles:
+    active: ${PROFILE}
+    group:
+      local:
+        - h2
+        - security
+      prod:
+        - mysql
+        - security
+
+---
+spring:
+  profiles:
+    active:
+      on-profile: local
+---
+spring:
+  profiles:
+    active:
+      on-profile: prod

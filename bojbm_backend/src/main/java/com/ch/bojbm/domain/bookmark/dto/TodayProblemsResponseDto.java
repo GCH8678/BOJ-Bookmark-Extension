@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class TodayProblemsResponseDto {
-    private List<Integer> problemNums;
+    private List<Integer> problemNumList;
 }

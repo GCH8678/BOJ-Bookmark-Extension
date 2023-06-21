@@ -18,7 +18,7 @@ public class UsersRequestDto {
     private String password;
 
 
-    public Users toEntity(PasswordEncoder passwordEncoder){
+    public Users toUsersEntity(PasswordEncoder passwordEncoder){
         return Users.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))

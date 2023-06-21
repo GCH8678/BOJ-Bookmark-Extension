@@ -1,4 +1,4 @@
-package com.ch.bojbm.global.auth.config;
+package com.ch.bojbm.global.config;
 
 import com.ch.bojbm.global.auth.util.filter.JwtFilter;
 import com.ch.bojbm.global.auth.token.TokenProvider;
