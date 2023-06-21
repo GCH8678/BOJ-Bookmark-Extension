@@ -1,31 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import './Popup.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import Navigation from './navigation';
 import Login from './Login';
-import TodayProblem from './TodayProblem';
+import App from './App';
 
 const Popup = () => {
-  //const [isLoggedIn, setLoggedIn] = useState();
-
   const [isLoggedIn, setLoggedIn] = useState(false);
   useEffect(() => {
-    chrome.storage.sync.get('isLoggedIn', (res) => console.log(res.isLoggedIn));
-  });
-  // chrome.storage.sync.get('isLoggedIn', (res) => {
-  //   setLoggedIn(res);
-  //   console.log('setLoggedIn : ' + res);
-  // });
+    chrome.storage.sync.get('isLoggedIn', (res) => setLoggedIn(res.isLoggedIn));
+  }, []);
+
   return (
     <>
       <div className="App">
         {isLoggedIn && (
-          <>
-            <Navigation setLoggedIn={setLoggedIn} />
-            <TodayProblem />
-          </>
+          <div className="PopupPage">
+            <App setLoggedIn={setLoggedIn} />
+          </div>
         )}
-        {!isLoggedIn && <Login setLoggedIn={setLoggedIn} />}
+        {!isLoggedIn && (
+          <div className="LoginPage">
+            <Login setLoggedIn={setLoggedIn} />
+          </div>
+        )}
       </div>
     </>
   );

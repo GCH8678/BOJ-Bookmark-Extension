@@ -1,15 +1,13 @@
 package com.ch.bojbm.domain.bookmark;
 
 import com.ch.bojbm.domain.BaseEntity;
+import com.ch.bojbm.domain.notification.Notification;
 import com.ch.bojbm.domain.user.Users;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Getter
-//@Setter  // TODO: 필요한 값 변경은 메소드 만들어서
 @Entity
 @NoArgsConstructor (access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -21,27 +19,36 @@ public class Bookmark extends BaseEntity {
     private Long id;
 
     @JsonIgnore
-    @ManyToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private Users user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Users users;
 
     private Integer problemNum;
+
+    @ManyToOne
+    @JoinColumn(name = "notification_id")
+    private Notification notification;
+
     //private String memo;
-    //private SetPeriod setPeriod; // TODO : 프론트에서 구현하고 여기에 필요 하지 않을 수 있음
-    private LocalDate notificationDate;
-
-
+    //private LocalDate notificationDate;
+    //private Boolean isChecked;  // TODO : 이후 웹앱등에서 푼 문제인지 확인할 수 있도록
 
     //OneToMany
     //private List<Notification> notifications
-    //TODO : 알람을 위한 분류 ( 내일,일주일 ,이주일 , 다음달 ) => ()
-    // 내일,일주일,이주일,다음달의 기준 ==> 무조건 오전 9시
-    // 알람 기준은 modifiedAt 기준 + 이후 setperiod를 1일로 바꾸는 식으로
-    // modifiedAt 리셋 + 1일로 다음날 다시 알림
-    // => setPeriod와 modifiedAt, => 이후 NOTIFICATION에 대한 Entity를 따로 분리
 
-    public void setNotificationDate(LocalDate notificationDate){
-        this.notificationDate=notificationDate;
+    @Builder
+    public Bookmark(Long id, Users users, Integer problemNum) {
+        this.id = id;
+        this.users = users;
+        this.problemNum = problemNum;
     }
+
+    public void setNotification(Notification notification) {
+        this.notification = notification;
+    }
+
+    //    public void setNotificationDate(LocalDate notificationDate){
+//        this.notificationDate=notificationDate;
+//    }
 
 
 }

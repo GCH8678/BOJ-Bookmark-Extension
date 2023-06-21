@@ -1,4 +1,4 @@
-package com.ch.bojbm.global.auth.config;
+package com.ch.bojbm.global.config;
 
 import com.ch.bojbm.global.auth.util.filter.JwtFilter;
 import com.ch.bojbm.global.auth.token.TokenProvider;
@@ -16,6 +16,5 @@ public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurity
     public void configure(HttpSecurity http){
         JwtFilter customFilter = new JwtFilter(tokenProvider);
         http.addFilterBefore(customFilter, UsernamePasswordAuthenticationFilter.class);
-
     }
 }

@@ -24,7 +24,9 @@ public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30;
+    //TODO : 이후 Refresh Token 추가.
+    //TODO : 임시로 Access Token 기한을 반년으로 해두었음 => Refresh Token 도입시 조정해주어야 함 
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60*24*7*4*6; // 60(초) * 60(분) * 24(시) * 7(day)
     private final Key key;
 
     public TokenProvider(@Value("${jwt.secretKey}") String secretKey) {

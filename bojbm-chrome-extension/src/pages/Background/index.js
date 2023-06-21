@@ -1,15 +1,33 @@
 
-const isLoggedIn=(sendResponse)=>{
-    chrome.storage.sync.get(['userStatus'],(response)=>{
-        const error = chrome.runtime.lastError;
-        sendResponse(error);
-    })
-}
+//const ApiUrl = "http://localhost:8080";
+const ApiUrl = "http://ec2-3-39-95-47.ap-northeast-2.compute.amazonaws.com:8080";
+//chrome.webRequest.onBeforeRequest.addListener() -> redirect 또는 request를 취소할때 유용
+//chrome.webRequest.onBeforeSendHeaders.addListener() -> Http 데이터 보내기 직전, headers는 사용가능 이후 상태 -> http request headers를 수정할때 유용
+//  ㄴ> accessToken만료기간을 확인하고 수정 할 수 있음
+// refreshToken 만료시 logout 
+//    // 이후 backend에도 logout 신호를 보내서 백엔드에서도 해당 Token의 값 지워줘야 함
+    //chrome.storage.sync.remove('refreshToken')
+    //chrome.storage.sync.remove('accessToken');
+    //     console.log("logout method")
+    //     chrome.storage.sync.set({isLoggedIn:false},(res)=>{
+    //         sendResponse(false);
+    //     });
+// chrome.webRequest.onResponseStarted.addListener((details)=>{
+//     //console.log("onResponseStarted addListner 작동")
+//     //console.log(details);
+//     return;
+// },{urls:["http://ec2-3-39-95-47.ap-northeast-2.compute.amazonaws.com:8080/api/bookmark/*"]},[]);
+// callback: 이벤트가 발생할 때 호출되는 함수
+// details : object요청에 대한 세부정보 => status(Integer)을 확인하기 위해 details.statusCode등으로 받아올 수 있음
+// filter : 이 리스너로 보낼 이벤트를 제한하는 필터
+
+chrome.runtime.onInstalled.addListener(()=>{
+    chrome.storage.sync.set({isLoggedIn:false});
+})
 
 
-
-const getAuth = async (email,password)=>{
-    console.log("getAuth 작동")
+const login = async (email,password,sendResponse)=>{
+    //console.log("getAuth method")
     const settings = {
         method: 'POST',
         body: JSON.stringify({
@@ -18,172 +36,293 @@ const getAuth = async (email,password)=>{
         }),
         headers: { 'Content-Type': 'application/json' }
     }
-    try{
-        const fetchResponse = await fetch(
-            "http://localhost:8080/api/auth/login",
+    fetch(
+            ApiUrl+"/api/auth/login",
             settings
-        )
-        const data = await fetchResponse.json()
-        console.log(data + "<- in getAuth");
-        return data;
-    }catch(err){
-        console.log(err +"<- err in getAuth");
-        return err
-    }
-}
-    
-//TODO : 로그인 상태 반환( API에 요청을 보냈을때 만료 401 에러 반환받은 경우 로그아웃 -> if( error.response?.status===401 && error.response?.data.result===="TOKEN INVALID"))
-//로그인 요청
-
-
-// const logoutMessage = ()=>{
-//     console.log("logoutMessage From background")
-//     chrome.storage.sync.set('isLoggedIn',false);
-//     //chrome.runtime.sendMessage({action:"logoutInBackground"});
-// }
-
-// const loginMessage = ()=>{
-//     console.log("loginMessage From background")
-//     chrome.storage.sync.set('isLoggedIn',true);
-
-//     //chrome.runtime.sendMessage({action:"loginInBackground"});
-// }
-
-
-
-chrome.runtime.onInstalled.addListener(()=>{
-    chrome.storage.sync.set({isLoggedIn:false});
-})
-
-chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
-    //로그인
-    if (request.action === "login"){
-        console.log("login process In background");
-        const {email,password} = request.data;
-        getAuth(email,password) //getAuth 비동기
-        .then((res)=>{ // res는 data를 받아온거 <- res.json()
+    ).then((res)=>{
+        if(res.ok){
+            //console.log("res in getAuth fetch")
             //console.log(res);
-            chrome.storage.sync.set({accessToken:res}, ()=>{
-                console.log(res);
-                sendResponse(true);
+            //const data = 
+            res.json().then((data)=>{
+                console.log("res.json() in getAuth fetch");
+                chrome.storage.sync.set({accessToken:data}, ()=>{
+                    console.log("set data in getAuth fetch chrome storage api ");
+                    console.log(data);
+                    sendResponse(true);
+            })
             });
-        })
-        .catch((err)=>{
-            console.log(err);
-            sendResponse(false);
-        })
-        return true;
-    }
+        }else{
+            throw new Error("Invalid login attempt");
+        }
+    })
+    .catch((error)=>{
+        //console.log(error <-"<- error in getAuth")
+        sendResponse(false)
+    })
+}
 
-    if (request.action === "logout"){
-        // chrome.storage.sync.remove('access-token');
-        // logoutMessage();
+const logout = async (sendResponse) =>{
+    // 이후 backend에도 logout 신호를 보내서 백엔드에서도 해당 Token의 값 지워줘야 함
+    //chrome.storage.sync.remove('refreshToken')
+    chrome.storage.sync.remove('accessToken');
+        //console.log("logout method")
         chrome.storage.sync.set({isLoggedIn:false},(res)=>{
             sendResponse(false);
         });
-        return true
+}
 
+const deleteBookmark= async (problemId,sendResponse) =>{
+    //console.log("deleteBookmark Method 작동");
+    //console.log("problemId : "+problemId);
+    chrome.storage.sync.get("accessToken")
+    .then((token)=>{
+        const settings ={
+            method: 'Delete',
+            headers:{
+                'Authorization': 'Bearer '+token.accessToken.accessToken,
+                'Content-Type': 'application/json'
+            },
+        }
+        fetch(
+            ApiUrl+"/api/bookmark/"+problemId,
+            settings
+        ).then((res)=>{
+            if(res.ok){
+                //console.log("res.ok in delteBookmark fetch");
+                sendResponse(true);
+            }else{
+                sendResponse(false);
+                throw new Error("Invalid deleteBookmark request");
+            }
+        })
+    })
+}
+
+const updateBookmark = async(problemId,afterday,sendResponse)=>{
+    //console.log("updateBookmark Method 작동")
+    //console.log("problemId : "+problemId);
+    //console.log("afterday : "+afterday);
+    chrome.storage.sync.get("accessToken")
+    .then((token)=>{
+
+        // Method : Patch 에서  Put으로 수정 -> fetch Api에서는 patch메소드 지원 안함
+        const settings ={
+            method: 'Put',
+            headers:{
+                'Authorization': 'Bearer '+token.accessToken.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                problemId,
+                afterday
+            }),
+        }
+
+
+        fetch(
+                ApiUrl+"/api/bookmark",
+                settings
+        ).then((res)=>{
+            if(res.ok){
+                //console.log("res.ok in updateBookmark fetch");
+                sendResponse(true);
+            }else{
+                sendResponse(false);
+                throw new Error("Invalid updateBookmark request");
+            }
+        })
+    })
+    .catch((err)=>{
+        //console.log(err);
+        sendResponse(false);
+    })
+
+}
+
+const addBookmark = async(problemId,afterday,sendResponse)=>{
+
+    //console.log("addBookmark Method 작동")
+    //console.log("problemId : "+problemId);
+    //console.log("afterday : "+afterday);
+    chrome.storage.sync.get("accessToken")
+    .then((token)=>{
+
+        const settings ={
+            method: 'Post',
+            headers:{
+                'Authorization': 'Bearer '+token.accessToken.accessToken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                problemId,
+                afterday
+            }),
+        }
+
+
+        fetch(
+                ApiUrl+"/api/bookmark",
+                settings
+        ).then((res)=>{
+            if(res.ok){
+                console.log("res.ok in addBookmark fetch");
+                sendResponse(true);
+            }else{
+                sendResponse(false);
+                throw new Error("Invalid addBookmark request");
+            }
+        })
+    })
+    .catch((err)=>{
+        //console.log(err);
+        sendResponse(false);
+    })
+
+}
+
+const isBookmarked = (problemId,sendResponse)=>{
+    //console.log("isBookmarked Method 작동")
+    chrome.storage.sync.get("accessToken")
+    .then((token)=>{
+
+        const settings ={
+            method: 'Get',
+            headers:{
+            'Authorization': 'Bearer '+token.accessToken.accessToken,
+            'Content-Type': 'application/json'
+            },
+        }
+
+
+        fetch(
+                ApiUrl+"/api/bookmark/"+problemId,
+                settings
+        ).then((res)=>{
+            if(res.ok){
+                //console.log("res.ok in isBookmarked fetch");
+                res.json().then((data)=>{
+                    sendResponse(data);
+                })
+            }else{
+                throw new Error("not res.ok in isBookmarked fetch");
+            }
+        })
+    })
+    .catch((err)=>{
+        //console.log(err);
+        sendResponse(false);
+    })
+}
+
+const getTodayProblemList = (sendResponse) =>{
+    //console.log("getTodayProblemList Method 작동")
+    chrome.storage.sync.get("accessToken")
+    .then((token)=>{
+
+        const settings ={
+            method: 'Get',
+            headers:{
+            'Authorization': 'Bearer '+token.accessToken.accessToken,
+            'Content-Type': 'application/json'
+            },
+        }
+
+
+        fetch(
+                ApiUrl+"/api/bookmark/list/today",
+                settings
+        ).then((res)=>{
+            if(res.ok){
+                //console.log("res.ok in getTodayProblemList fetch");
+                res.json().then((res)=>{
+                    sendResponse(res.problemNumList);
+                    //console.log(res);
+                    //console.log(res.problemNumList);
+                })
+            }else{
+                throw new Error("Invalid getTodayProblemList request");
+            }
+        })
+    })
+    .catch((err)=>{
+        //console.log(err);
+        sendResponse(["invalid request : please login after logout or refresh popup page"]);
+    })
+}
+
+
+
+chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
+
+
+    //로그인
+    if (request.action === "login"){
+        //console.log("login process In background");
+        const {email,password} = request.data;
+        login(email,password,sendResponse) //getAuth 비동기
+        return true;
+    }
+
+    //로그아웃
+    if (request.action === "logout"){
+        logout(sendResponse);
+        return true
     }
 
 
     //bookmark추가
     if (request.action === "addBookmark"){
-        // console.log("Bookmark")
-        // const {problemId} = request.data
-        // addBookmark(problemId)
-        // .then((res)=>{ // res는 data를 받아온거 <- res.json() => 무슨 로직을 더 해줘야하지? -> 
-            
-        //     const user = res.result.user
-        //     chrome.storage.sync.set({user})
-        //     sendResponse('')
-        // })
-        // .catch((err)=>{
-        //     sendResponse(err.message)
-        // })
-        return true
+        //console.log("addBookmark Listener");
+        const {problemId,afterday} = request.data;
+        addBookmark(problemId,afterday,sendResponse);
+        return true;
+    }
+    //bookmark업데이트
+    if(request.action === "updateBookmark"){
+        //console.log("updateBookmark Listener");
+        const {problemId,afterday} = request.data;
+        updateBookmark(problemId,afterday,sendResponse);
+        return true;
+        
     }
 
+    //bookmark 삭제
+    if (request.action ==="deleteBookmark"){
+        //console.log("deleteBookmark Listener");
+        const {problemId} = request.data;
+        deleteBookmark(problemId,sendResponse)
+        return true;
+    }
+
+    //bookmark 여부 확인
+    if (request.action === "isBookmarked"){
+        //console.log("isBookmarked Listener")
+        const {problemId} = request.data
+        isBookmarked(problemId,sendResponse)
+        return true;
+    }
+
+    //오늘 풀어야할 문제 정보 받기
+    if (request.action === "getTodayProblemList"){
+        //console.log("getTodayProblemList Listener")
+        // 오늘 날짜 정보
+        const today = new Date();
+        getTodayProblemList(sendResponse);
+        return true;
+    }
+
+    // accessToken check 및 갱신
+    if (request.action === "checkAccessToken"){
+        //console.log("accessToken check Listener")
+        //
+    }
 })
 
 
 
 
-// const addBookmark = async(problemId)=>{
-//     const settings ={
-//         method: 'Post',
-//         headers:{
-//             'Authorization': "Bearer "+chrome.storage.sync.get("access_token")
-//         },
-//         body: JSON.stringify({
-//             problemId
-//         }),
-//     }
-//     try{
-//         const fetchResponse = await fetch(
-//             "http://localhost:8080/api/bookmark",
-//             settings
-//         )
-//         const data = await fetchResponse.json()
-//         return data;
-//     }catch(err){
-//         return err
-//     }
-// }
-
-
-// 다른 js에서 메시지 보내는 방법
-// chrome.runtime.sendMessage({
-//     method: 'createSuccessProblemTab',
-//     asdf: 'asdfjksljfd', ...
-//   });
-
-
-
-
-
-// //send util
-// // fetch("http://localhost:8080/~~"),{
-// //     method:"post",
-// //     headers :{
-// //         Authorization : chrome.storage.sync.get("access_token")
-// //     }
-// // }.then(response=>response.json())
-// // .then(response=>{
-// //     console.log(response.data);
-// // })
-
-
-// // refresh 토큰 요청
-// //const refereshToken =
-
-
-// //로그인 요청
-// const authLogin =async(email,password)=>{
-//     const settings = {
-//         method: 'POST',
-//         // headers:{
-//         //     Accept: 'application/json, text/plain, */*',
-//         //     'Content-Type' : 'application/json',
-//         // },
-//         body: JSON.stringify({
-//             email,
-//             password,
-//         }),
-//     }
-//     try{
-//         const fetchResponse = await fetch(
-//             "http://localhost:8080/api/auth/authenticate",
-//             settings
-//         )
-//         const data = await fetchResponse.json()
-//         return data;
-//     }catch(err){
-//         return err
-//     }
-// }
-
-
-// const getBookmark = async()=>{
+// const getBookmarkList = async()=>{
 //     const settings ={
 //         method: 'Get',
 //         headers:{
@@ -195,7 +334,7 @@ chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
 //     }
 //     try{
 //         const fetchResponse = await fetch(
-//             "http://localhost:8080/api/bookmark/list",
+//             ApiUrl+"/api/bookmark/list",
 //             settings
 //         )
 //         const data = await fetchResponse.json()
@@ -204,64 +343,3 @@ chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
 //         return err
 //     }
 // }
-
-// //bookmark 추가 요청 => content_script.js로 옮겨야 할듯 ( bookmark.js )
-// const addBookmark = async(problemId)=>{
-//     const settings ={
-//         method: 'Post',
-//         headers:{
-//             'Authorization': "Bearer "+chrome.storage.sync.get("access_token")
-//         },
-//         body: JSON.stringify({
-//             problemId
-//         }),
-//     }
-//     try{
-//         const fetchResponse = await fetch(
-//             "http://localhost:8080/api/bookmark/add",
-//             settings
-//         )
-//         const data = await fetchResponse.json()
-//         return data;
-//     }catch(err){
-//         return err
-//     }
-// }
-
-// // 크롬 브라우저 시작시 storage 초기화
-// chrome.runtime.onStartup.addListener(function(){
-//     chrome.storage.sync.clear()
-// })
-
-// chrome.runtime.onMessage.addListener((request,sender,sendResponse)=>{
-//     //로그인
-//     if (request.action == 'login'){
-//         const {email,password} = request.data
-//         authLogin(email,password)
-//         .then((res)=>{ // res는 data를 받아온거 <- res.json()
-//             console.log(res)
-//             chrome.storage.sync.set('access-token',res.access_token);
-//         })
-//         .catch((err)=>{
-//             sendResponse(err.message)
-//         })
-//         return true
-//     }
-
-//     //bookmark추가
-//     if (request.action == 'addBookmark'){
-//         const {problemId} = request.data
-//         addBookmark(problemId)
-//         .then((res)=>{ // res는 data를 받아온거 <- res.json() => 무슨 로직을 더 해줘야하지? -> 
-            
-//             const user = res.result.user
-//             chrome.storage.sync.set({user})
-//             sendResponse('')
-//         })
-//         .catch((err)=>{
-//             sendResponse(err.message)
-//         })
-//         return true
-//     }
-
-// })

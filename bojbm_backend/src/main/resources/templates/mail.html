@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <table class="tb_col">
+        <tr>
+            <th>오늘 풀어야할 문제</th>
+        </tr>
+        <tr th:each =" bookmark : ${bookmarks} ">
+            <td><a th:text="${bookmark.problemNum}"th:href="@{'https://www.acmicpc.net/problem/'+${bookmark.problemNum}}"></a></td>
+        </tr>
+    </table>
+</body>
+</html>
