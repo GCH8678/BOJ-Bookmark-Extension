@@ -17,10 +17,10 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import getApiUrl from '../../getApiUrl';
 
 const defaultTheme = createTheme();
-const ApiUrl =
-  'http://ec2-3-39-95-47.ap-northeast-2.compute.amazonaws.com:8080';
+const ApiUrl = getApiUrl();
 
 function Copyright(props) {
   return (
@@ -65,6 +65,7 @@ const FindPassword = () => {
 
   const sendAuthCode = () => {
     if (validateEmail(form.email)) {
+      setSendEmail(true);
       const settings = {
         method: 'POST',
         body: JSON.stringify({

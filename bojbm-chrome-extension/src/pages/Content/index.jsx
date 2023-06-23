@@ -54,7 +54,7 @@ const BookmarkButton = () => {
 
 const title = document.getElementById('problem_title');
 const bookmarkBtn = document.createElement('btn');
-title.after(bookmarkBtn);
+title.before(bookmarkBtn);
 //document.body.prepend(bookmarkBtn);
 ReactDOM.createRoot(bookmarkBtn).render(
   <React.StrictMode>

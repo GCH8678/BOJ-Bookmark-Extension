@@ -9,6 +9,7 @@ import com.ch.bojbm.global.auth.token.TokenProvider;
 import com.ch.bojbm.global.redis.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -28,15 +29,14 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final RedisUtil redisUtil;
 
-    public SignUpResponseDto signup(UsersRequestDto requestDto) {
+    public boolean signup(UsersRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
-            return SignUpResponseDto.of("이미 존재하는 계정입니다.");
+            return false;
         }
-
 
         Users users = requestDto.toUsersEntity(passwordEncoder);
         memberRepository.save(users);
-        return SignUpResponseDto.of("회원가입이 완료되었습니다.");
+        return true;
     }
 
     public TokenDto login(UsersRequestDto requestDto) {
@@ -56,7 +56,13 @@ public class AuthService {
         return memberRepository.existsByEmail(email);
     }
 
+
     public boolean checkCode(String authCode,String email) {
-        return (email.equals(redisUtil.getData(authCode)));
+        boolean checkedCode = email.equals(redisUtil.getData(authCode));
+        if(checkedCode){
+            redisUtil.deleteData(authCode);
+            return true;
+        }
+        return false;
     }
 }

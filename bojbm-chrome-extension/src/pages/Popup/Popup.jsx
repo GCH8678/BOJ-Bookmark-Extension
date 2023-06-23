@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './Popup.css';
-import 'bootstrap/dist/css/bootstrap.css';
 import Login from './Login';
 import App from './App';
 
@@ -12,18 +11,20 @@ const Popup = () => {
 
   return (
     <>
-      <div className="App">
-        {isLoggedIn && (
-          <div className="PopupPage">
-            <App setLoggedIn={setLoggedIn} />
-          </div>
-        )}
-        {!isLoggedIn && (
-          <div className="LoginPage">
-            <Login setLoggedIn={setLoggedIn} />
-          </div>
-        )}
-      </div>
+      <>
+        <div className="App">
+          {isLoggedIn && (
+            <div className="PopupPage">
+              <App setLoggedIn={setLoggedIn} />
+            </div>
+          )}
+          {!isLoggedIn && (
+            <div className="LoginPage">
+              <Login setLoggedIn={setLoggedIn} />
+            </div>
+          )}
+        </div>
+      </>
     </>
   );
 };

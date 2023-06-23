@@ -3,6 +3,7 @@ package com.ch.bojbm.global.auth;
 import com.ch.bojbm.domain.mail.EmailService;
 import com.ch.bojbm.domain.user.UserService;
 import com.ch.bojbm.domain.user.ChangeMemberPasswordResponseDto;
+import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.domain.user.dto.ChangePasswordRequestDto;
 import com.ch.bojbm.domain.user.dto.UsersRequestDto;
 import com.ch.bojbm.global.auth.dto.EmailRequestDto;
@@ -26,7 +27,11 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponseDto> signup(@RequestBody UsersRequestDto requestDto) {
-        return ResponseEntity.ok(authService.signup(requestDto));
+        boolean signUpSuccess = authService.signup(requestDto);
+        if (!signUpSuccess) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(SignUpResponseDto.of("이미 존재하는 계정입니다."));
+        }
+        return ResponseEntity.ok(SignUpResponseDto.of("회원가입이 완료되었습니다."));
     }
 
     @PostMapping("/login")

@@ -1,6 +1,8 @@
+import getApiUrl from "../../getApiUrl.js";
 
+const ApiUrl = getApiUrl();
 //const ApiUrl = "http://localhost:8080";
-const ApiUrl = "http://ec2-3-39-95-47.ap-northeast-2.compute.amazonaws.com:8080";
+//const ApiUrl = "http://ec2-3-39-95-47.ap-northeast-2.compute.amazonaws.com:8080";
 //chrome.webRequest.onBeforeRequest.addListener() -> redirect 또는 request를 취소할때 유용
 //chrome.webRequest.onBeforeSendHeaders.addListener() -> Http 데이터 보내기 직전, headers는 사용가능 이후 상태 -> http request headers를 수정할때 유용
 //  ㄴ> accessToken만료기간을 확인하고 수정 할 수 있음

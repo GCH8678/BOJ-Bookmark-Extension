@@ -61,7 +61,7 @@ public class NotificationService {
 
 
     //TODO : 해당 notification이 갱신될때 todayList도 갱신하게 할지 고민해 봐야 함
-    @Scheduled(cron="0 50 01 * * ?")  // 매일 9시 마다 알림 초 분 시간 일 월 요일
+    @Scheduled(cron="0 0 09 * * ?")  // 매일 9시 마다 알림 초 분 시간 일 월 요일
     public void sendNotificationWithMail() throws MessagingException { // Mail 알림
         LocalDate today = LocalDate.now();
         List<Notification> notifications = getTodayNotifications(today);

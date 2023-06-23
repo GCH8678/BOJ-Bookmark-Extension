@@ -19,10 +19,10 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import getApiUrl from '../../getApiUrl';
 
 const defaultTheme = createTheme();
-const ApiUrl =
-  'http://ec2-3-39-95-47.ap-northeast-2.compute.amazonaws.com:8080';
+const ApiUrl = getApiUrl();
 
 function Copyright(props) {
   return (
@@ -69,6 +69,7 @@ const Signup = () => {
   const sendAuthCode = () => {
     if (validateEmail(form.email)) {
       //console.log('sendAuthCode method');
+      setSendEmail(true);
       const settings = {
         method: 'POST',
         body: JSON.stringify({
@@ -166,7 +167,10 @@ const Signup = () => {
             res.json().then((data) => {
               console.log(data);
               alert(data.message);
+              window.close();
             });
+          } else if (res.status == 409) {
+            alert(data.message);
           } else {
             alert(' 회원가입에 실패하였습니다. ');
             throw new Error('Invalid SignUp attempt');

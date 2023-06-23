@@ -30,7 +30,7 @@ public class RedisUtil {
     }
 
     //삭제
-    public void deleteDate(String key){
+    public void deleteData(String key){
         redisTemplate.delete(key);
     }
 }

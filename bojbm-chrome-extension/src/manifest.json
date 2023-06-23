@@ -1,7 +1,7 @@
 {
     "name" : "BOJ Bookmark Extension",
-    "version" : "1.0.0",
-    "description":"BOJ 문제 북마크 알람 기능 확장프로그램",
+    "version" : "1.0.3",
+    "description":"백준(BOJ) 문제 북마크 알람(이메일) 기능",
     "manifest_version":3,
     "action":{
         "default_popup":"popup.html",

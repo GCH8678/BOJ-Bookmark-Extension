@@ -13,7 +13,7 @@ const Navigation = ({ setLoggedIn }) => {
       },
       (res) => {
         //props.setLoggedIn(false);
-        console.log(res);
+        //console.log(res);
         chrome.storage.sync.set({ isLoggedIn: false }, (res) => {
           setLoggedIn(false);
         });
