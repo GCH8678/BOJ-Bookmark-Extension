@@ -30,12 +30,9 @@ public class NotificationService {
     private final EmailService emailService;
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void checkAndDeleteNotification(Notification notification){
-        Set<Bookmark> bookmarksAtNotificationDate = notification.getBookmarks();
-        if(bookmarksAtNotificationDate.size()==1){
-            notificationRepository.deleteById(notification.getId());
-        }
+        notificationRepository.deleteNotificationByIdAndBookmarks_Empty(notification.getId());
     }
 
     @Transactional(readOnly = true)

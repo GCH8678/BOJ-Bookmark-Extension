@@ -101,8 +101,9 @@ public class BookmarkService {
         Notification notification = savedBookmark.getNotification();
 
         if(savedBookmark != null){
-            notificationService.checkAndDeleteNotification(notification);
             bookmarkJpaRepository.delete(savedBookmark);
+            bookmarkJpaRepository.flush();
+            notificationService.checkAndDeleteNotification(notification);
         }else throw new RuntimeException("이미 존재하지 않는 북마크입니다.");
 
 
@@ -110,16 +111,16 @@ public class BookmarkService {
 
 
     @Transactional
-    public void updateBookmark(User user, Integer problemNum, int afterDay){
+    public void updateBookmark(User user, int problemNum, int afterDay){
         Users currentUsers = getUsers(user.getUsername());
         LocalDate newNotificationDate = LocalDate.now().plusDays(afterDay);
 
         Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
         Notification oldNotification = savedBookmark.getNotification();
         if (savedBookmark != null){
-            notificationService.checkAndDeleteNotification(oldNotification);
             savedBookmark.setNotification(notificationService.addBookmarkInNotification(currentUsers,savedBookmark,newNotificationDate));
-            bookmarkJpaRepository.save(savedBookmark);
+            bookmarkJpaRepository.saveAndFlush(savedBookmark);
+            notificationService.checkAndDeleteNotification(oldNotification);
         }else throw new RuntimeException("잘못된 요청입니다.(저장된 북마크가 아니라 수정이 불가함)");
 
     }

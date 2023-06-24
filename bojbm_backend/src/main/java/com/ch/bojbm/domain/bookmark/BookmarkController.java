@@ -64,8 +64,7 @@ public class BookmarkController {
      */
     @PutMapping("")
     public synchronized ResponseEntity updateBookmark(@RequestBody BookmarkUpdateRequestDto bookmarkUpdateRequestDto, @AuthenticationPrincipal User user){
-        bookmarkService.deleteBookmark(user,bookmarkUpdateRequestDto.getProblemId());
-        bookmarkService.addBookmark(user,bookmarkUpdateRequestDto.getProblemId(), bookmarkUpdateRequestDto.getAfterday());
+        bookmarkService.updateBookmark(user,bookmarkUpdateRequestDto.getProblemId(), bookmarkUpdateRequestDto.getAfterday());
         return ResponseEntity.ok().build();
     }
 
