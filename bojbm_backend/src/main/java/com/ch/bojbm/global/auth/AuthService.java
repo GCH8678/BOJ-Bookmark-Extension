@@ -3,6 +3,7 @@ package com.ch.bojbm.global.auth;
 import com.ch.bojbm.domain.user.UsersRepository;
 import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.domain.user.dto.UsersRequestDto;
+import com.ch.bojbm.global.auth.dto.SignUpRequestDto;
 import com.ch.bojbm.global.auth.dto.SignUpResponseDto;
 import com.ch.bojbm.global.auth.dto.TokenDto;
 import com.ch.bojbm.global.auth.token.TokenProvider;
@@ -29,7 +30,7 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final RedisUtil redisUtil;
 
-    public boolean signup(UsersRequestDto requestDto) {
+    public boolean signup(SignUpRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             return false;
         }

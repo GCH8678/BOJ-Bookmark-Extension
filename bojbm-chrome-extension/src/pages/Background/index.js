@@ -49,8 +49,8 @@ const login = async (email,password,sendResponse)=>{
             res.json().then((data)=>{
                 console.log("res.json() in getAuth fetch");
                 chrome.storage.sync.set({accessToken:data}, ()=>{
-                    console.log("set data in getAuth fetch chrome storage api ");
-                    console.log(data);
+                    //console.log("set data in getAuth fetch chrome storage api ");
+                    //console.log(data);
                     sendResponse(true);
             })
             });

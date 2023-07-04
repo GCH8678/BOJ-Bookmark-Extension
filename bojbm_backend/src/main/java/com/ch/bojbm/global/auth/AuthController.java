@@ -2,11 +2,11 @@ package com.ch.bojbm.global.auth;
 
 import com.ch.bojbm.domain.mail.EmailService;
 import com.ch.bojbm.domain.user.UserService;
-import com.ch.bojbm.domain.user.ChangeMemberPasswordResponseDto;
-import com.ch.bojbm.domain.user.Users;
+import com.ch.bojbm.domain.user.dto.ChangeMemberPasswordResponseDto;
 import com.ch.bojbm.domain.user.dto.ChangePasswordRequestDto;
 import com.ch.bojbm.domain.user.dto.UsersRequestDto;
 import com.ch.bojbm.global.auth.dto.EmailRequestDto;
+import com.ch.bojbm.global.auth.dto.SignUpRequestDto;
 import com.ch.bojbm.global.auth.dto.SignUpResponseDto;
 import com.ch.bojbm.global.auth.dto.TokenDto;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class AuthController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseDto> signup(@RequestBody UsersRequestDto requestDto) {
+    public ResponseEntity<SignUpResponseDto> signup(@RequestBody SignUpRequestDto requestDto) {
         boolean signUpSuccess = authService.signup(requestDto);
         if (!signUpSuccess) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(SignUpResponseDto.of("이미 존재하는 계정입니다."));

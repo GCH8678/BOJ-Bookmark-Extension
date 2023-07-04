@@ -28,7 +28,7 @@ public class EmailService {
     private final SpringTemplateEngine templateEngine;
 
     private final RedisUtil redisUtil;
-    private final UserService userService;
+    //private final UserService userService;
 
     /**
      * @info : 이메일로 인증코드 전송

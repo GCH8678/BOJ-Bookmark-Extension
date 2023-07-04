@@ -1,5 +1,6 @@
 package com.ch.bojbm.domain.user;
 
+import com.ch.bojbm.domain.user.dto.ChangeMemberPasswordResponseDto;
 import com.ch.bojbm.domain.user.dto.UsersResponseDto;
 import com.ch.bojbm.global.auth.util.SecurityUtil;
 import com.ch.bojbm.global.redis.RedisUtil;

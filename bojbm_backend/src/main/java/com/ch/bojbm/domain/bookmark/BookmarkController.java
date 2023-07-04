@@ -1,7 +1,6 @@
 package com.ch.bojbm.domain.bookmark;
 
-import com.ch.bojbm.domain.bookmark.dto.BookmarkCreateRequestDto;
-import com.ch.bojbm.domain.bookmark.dto.BookmarkUpdateRequestDto;
+import com.ch.bojbm.domain.bookmark.dto.*;
 import com.ch.bojbm.domain.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +29,8 @@ public class BookmarkController {
      * @return bookmarkListResponseDto
      */
     @GetMapping("/list")
-    public ResponseEntity getBookmarkList(@AuthenticationPrincipal User user){
-        return ResponseEntity.ok(bookmarkService.getBookmarkList(user));
+    public ResponseEntity<BookmarkListResponseDto> getBookmarkList(@AuthenticationPrincipal User user){
+        return ResponseEntity.ok(bookmarkService.getAllBookmarks(user));
     }
 
     /**
@@ -40,7 +39,7 @@ public class BookmarkController {
      * @return TodayProblemsResponseDto
      */
     @GetMapping("/list/today")
-    public ResponseEntity getTodayProblemList(@AuthenticationPrincipal User user){
+    public ResponseEntity<TodayProblemsResponseDto> getTodayProblemList(@AuthenticationPrincipal User user){
         return ResponseEntity.ok(bookmarkService.getTodayProblemList(user));
     }
 
@@ -52,7 +51,7 @@ public class BookmarkController {
      */
     @PostMapping("")
     public ResponseEntity addBookmark(@RequestBody BookmarkCreateRequestDto bookmarkCreateRequestDto, @AuthenticationPrincipal User user){
-        bookmarkService.addBookmark(user,bookmarkCreateRequestDto.getProblemId(), bookmarkCreateRequestDto.getAfterday());
+        bookmarkService.addBookmark(user,bookmarkCreateRequestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -64,7 +63,7 @@ public class BookmarkController {
      */
     @PutMapping("")
     public synchronized ResponseEntity updateBookmark(@RequestBody BookmarkUpdateRequestDto bookmarkUpdateRequestDto, @AuthenticationPrincipal User user){
-        bookmarkService.updateBookmark(user,bookmarkUpdateRequestDto.getProblemId(), bookmarkUpdateRequestDto.getAfterday());
+        bookmarkService.updateBookmark(user,bookmarkUpdateRequestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -76,9 +75,9 @@ public class BookmarkController {
      * @return bollean
      */
     @GetMapping("/{problemNum}")
-    public ResponseEntity checkBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal User user){
+    public ResponseEntity<IsBookmarkedDto> checkBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal User user){
         boolean isBookmarked = bookmarkService.checkBookmark(user,problemNum);
-        return ResponseEntity.ok(isBookmarked);
+        return ResponseEntity.ok(IsBookmarkedDto.builder().isBookmarked(isBookmarked).build());
     }
 
 
@@ -89,7 +88,7 @@ public class BookmarkController {
      * @return message
      */
     @DeleteMapping("/{problemNum}")
-    public synchronized ResponseEntity deleteBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal User user){
+    public ResponseEntity deleteBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal User user){
         bookmarkService.deleteBookmark(user,problemNum);
         return ResponseEntity.ok().build();
     }

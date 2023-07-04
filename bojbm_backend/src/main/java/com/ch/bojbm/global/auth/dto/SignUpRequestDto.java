@@ -3,6 +3,7 @@ package com.ch.bojbm.global.auth.dto;
 import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.global.auth.entity.Authority;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignUpRequestDto {
+
     private String email;
     private String password;
 

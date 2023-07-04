@@ -1,0 +1,16 @@
+= BOJ Bookmark Extension API Docs
+백준 북마크 익스텐션 API 문서
+
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[User-API]]
+== User API
+
+[[User-회원가입]]
+=== User 회원가입
+operation::join/join_success[snippets='http-request,request-fields,http-response,response-fields']

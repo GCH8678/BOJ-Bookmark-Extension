@@ -1,9 +1,7 @@
 package com.ch.bojbm.domain.bookmark;
 
 
-import com.ch.bojbm.domain.bookmark.dto.BookmarkInListResponseDto;
-import com.ch.bojbm.domain.bookmark.dto.BookmarkListResponseDto;
-import com.ch.bojbm.domain.bookmark.dto.TodayProblemsResponseDto;
+import com.ch.bojbm.domain.bookmark.dto.*;
 import com.ch.bojbm.domain.notification.Notification;
 import com.ch.bojbm.domain.notification.NotificationService;
 import com.ch.bojbm.domain.user.Users;
@@ -25,9 +23,10 @@ import java.util.*;
 public class BookmarkService {
     private final BookmarkJpaRepository bookmarkJpaRepository;
     private final UsersRepository usersRepository;
+
     private final NotificationService notificationService;
 
-    public BookmarkListResponseDto getBookmarkList(User user){
+    public BookmarkListResponseDto getAllBookmarks(User user){
         Users currentUsers = getUsers(user.getUsername());
         List<BookmarkInListResponseDto> bookmarks = new ArrayList<>();
         Iterator<Bookmark> iterator = bookmarkJpaRepository.findAllByUsers(currentUsers).iterator();
@@ -42,39 +41,42 @@ public class BookmarkService {
     }
 
     public TodayProblemsResponseDto getTodayProblemList(User user){
-        //TODO : todayNotification 값이 null값인 경우 해결
         Notification todayNotification = notificationService.getTodayNotification(user);
-        List<Integer> problemNums = new ArrayList<>();
+        List<TodayProblemDto> problemList = new ArrayList<>();
 
          if(todayNotification == null) {
-             return TodayProblemsResponseDto.builder().problemNumList(problemNums).build();
+             // todayNotification 이 널인 경우 => 빈값
+             return TodayProblemsResponseDto.builder().problemList(problemList).build();
          }
 
         Set<Bookmark> bookmarks = todayNotification.getBookmarks();
-        Iterator<Bookmark> iterator = bookmarks.iterator();
-        while(iterator.hasNext()){
-            Bookmark temp = iterator.next();
-            Integer dto = temp.getProblemNum();
-            problemNums.add(dto);
+        for(Bookmark bookmark : bookmarks){
+            TodayProblemDto dto = TodayProblemDto.builder()
+                    .problemTitle(bookmark.getProblemTitle())
+                    .problemNum(bookmark.getProblemNum())
+                    .memo(bookmark.getMemo())
+                    .build();
+                    problemList.add(dto);
         }
         return TodayProblemsResponseDto.builder()
-                .problemNumList(problemNums)
+                .problemList(problemList)
                 .build();
     }
 
 
-    public void addBookmark(User user, int problemNum, int afterDay){
+    public void addBookmark(User user, BookmarkCreateRequestDto dto){
 
         Users currentUsers = getUsers(user.getUsername());
-        LocalDate notificationDate = LocalDate.now().plusDays(afterDay);
+        LocalDate notificationDate = LocalDate.now().plusDays(dto.getAfterDay());
 
-        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
+        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(dto.getProblemId(),currentUsers);
 
         if(savedBookmark == null){
-
             Bookmark newBookmark = Bookmark.builder()
-                    .problemNum(problemNum)
+                    .problemNum(dto.getProblemId())
                     .users(currentUsers)
+                    .problemTitle(dto.getProblemTitle())
+                    .memo(dto.getMemo())
                     .build();
             newBookmark.setNotification(notificationService.addBookmarkInNotification(currentUsers, newBookmark, notificationDate));
             bookmarkJpaRepository.save(newBookmark);
@@ -111,13 +113,14 @@ public class BookmarkService {
 
 
     @Transactional
-    public void updateBookmark(User user, int problemNum, int afterDay){
+    public void updateBookmark(User user, BookmarkUpdateRequestDto dto){
         Users currentUsers = getUsers(user.getUsername());
-        LocalDate newNotificationDate = LocalDate.now().plusDays(afterDay);
+        LocalDate newNotificationDate = LocalDate.now().plusDays(dto.getAfterDay());
 
-        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
+        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(dto.getProblemId(),currentUsers);
         Notification oldNotification = savedBookmark.getNotification();
         if (savedBookmark != null){
+            savedBookmark.setMemo(dto.getMemo());
             savedBookmark.setNotification(notificationService.addBookmarkInNotification(currentUsers,savedBookmark,newNotificationDate));
             bookmarkJpaRepository.saveAndFlush(savedBookmark);
             notificationService.checkAndDeleteNotification(oldNotification);

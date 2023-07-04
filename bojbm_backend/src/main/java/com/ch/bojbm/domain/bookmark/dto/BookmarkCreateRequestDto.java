@@ -8,5 +8,7 @@ import lombok.*;
 @Builder
 public class BookmarkCreateRequestDto {
     private Integer problemId;
-    private Integer afterday;
+    private String problemTitle;
+    private String memo;
+    private Integer afterDay;
 }

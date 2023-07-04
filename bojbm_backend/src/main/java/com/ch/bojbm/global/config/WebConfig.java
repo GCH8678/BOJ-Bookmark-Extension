@@ -3,12 +3,15 @@ package com.ch.bojbm.global.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {  // 전역적으로 CORS 관련 필터 적용
     private final long MAX_AGE_SECS = 3600;
+
+
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

@@ -1,4 +1,4 @@
-package com.ch.bojbm.domain.user;
+package com.ch.bojbm.domain.user.dto;
 
 
 import lombok.Builder;
