@@ -1,6 +1,8 @@
-package com.ch.bojbm.domain.bookmark;
+package com.ch.bojbm.ControllerTest;
 
 
+import com.ch.bojbm.domain.bookmark.BookmarkController;
+import com.ch.bojbm.domain.bookmark.BookmarkService;
 import com.ch.bojbm.domain.bookmark.dto.BookmarkInListResponseDto;
 import com.ch.bojbm.domain.bookmark.dto.BookmarkListResponseDto;
 import com.ch.bojbm.domain.bookmark.dto.TodayProblemDto;

@@ -5,10 +5,7 @@ import com.ch.bojbm.domain.user.UserService;
 import com.ch.bojbm.domain.user.dto.ChangeMemberPasswordResponseDto;
 import com.ch.bojbm.domain.user.dto.ChangePasswordRequestDto;
 import com.ch.bojbm.domain.user.dto.UsersRequestDto;
-import com.ch.bojbm.global.auth.dto.EmailRequestDto;
-import com.ch.bojbm.global.auth.dto.SignUpRequestDto;
-import com.ch.bojbm.global.auth.dto.SignUpResponseDto;
-import com.ch.bojbm.global.auth.dto.TokenDto;
+import com.ch.bojbm.global.auth.dto.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -62,18 +59,18 @@ public class AuthController {
 
 
     @GetMapping(value={"/signup/code","/password/code"})
-    public ResponseEntity<Boolean> checkCode(@RequestParam(value="authCode") String authCode, @RequestParam(value="email") String email){
+    public ResponseEntity<CodeCheckedDto> checkCode(@RequestParam(value="authCode") String authCode, @RequestParam(value="email") String email){
         boolean codeCheck = authService.checkCode(authCode,email);
         if(!codeCheck){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CodeCheckedDto.of(false));
         }
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok(CodeCheckedDto.of(true));
     }
 
     @PostMapping("/password/change")
     public ResponseEntity<ChangeMemberPasswordResponseDto> setMemberPassword(@RequestBody ChangePasswordRequestDto request) {
         try {
-            return ResponseEntity.ok(userService.changeMemberPassword(request.getAuthCode(), request.getEmail(), request.getPassword()));
+            return ResponseEntity.ok(userService.changeMemberPassword(request));
         }catch(IllegalArgumentException exception){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

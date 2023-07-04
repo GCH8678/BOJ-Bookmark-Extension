@@ -1,16 +1,47 @@
-= BOJ Bookmark Extension API Docs
-백준 북마크 익스텐션 API 문서
-
+= BOJ Bookmark Extension API
 :doctype: book
+:sectnums:
 :icons: font
 :source-highlighter: highlightjs
 :toc: left
-:toclevels: 2
+:toclevels: 3
+:toc-title: Table of Contents
 :sectlinks:
 
-[[User-API]]
-== User API
 
-[[User-회원가입]]
-=== User 회원가입
-operation::join/join_success[snippets='http-request,request-fields,http-response,response-fields']
+[[Bookmark-API]]
+== 북마크 관련 API
+
+***
+
+[[Bookmark-전체-조회]]
+=== 모든 북마크 조회
+operation::bookmark/list[snippets='http-request,http-response,response-fields']
+
+***
+
+[[Bookmark-오늘-풀어야할-문제-목록-조회]]
+=== 오늘 풀어야할 문제 목록 조회
+operation::bookmark/list-today[snippets='http-request,http-response,response-fields']
+
+***
+
+[[Bookmark-북마크-추가]]
+=== 북마크 추가
+operation::bookmark/add[snippets='http-request,http-response,request-fields']
+
+***
+
+[[Bookmark-북마크-수정]]
+=== 북마크 수정
+operation::bookmark/update[snippets='http-request,http-response,request-fields']
+
+***
+
+[[Bookmark-북마크-여부-확인]]
+=== 북마크 여부 확인
+operation::bookmark/update[snippets='http-request,http-response,request-fields']
+
+[[Bookmark-북마크-취소]]
+=== 북마크 취소
+operation::bookmark/delete[snippets='http-request,http-response,path-parameters']
