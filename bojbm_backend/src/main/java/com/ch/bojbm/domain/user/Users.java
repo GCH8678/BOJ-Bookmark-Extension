@@ -38,6 +38,8 @@ public class Users extends BaseEntity{
         this.password = password;
     }
 
+    
+    // TODO : 정적 팩토리 메서드 패턴으로 유저를 생성하는 게 좀 더 이해하기 좋은 코드가 될 듯 (생성 메서드)
     @Builder
     public Users(String email, String password, Authority authority) {
         this.email=email;

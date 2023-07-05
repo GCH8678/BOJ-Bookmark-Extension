@@ -6,8 +6,8 @@ import com.ch.bojbm.domain.user.dto.ChangeMemberPasswordResponseDto;
 import com.ch.bojbm.global.auth.AuthController;
 import com.ch.bojbm.global.auth.AuthService;
 import com.ch.bojbm.global.auth.dto.TokenDto;
-import com.ch.bojbm.global.auth.util.filter.JwtFilter;
-import com.ch.bojbm.global.config.JwtSecurityConfig;
+import com.ch.bojbm.global.auth.filter.JwtAuthenticationFilter;
+import com.ch.bojbm.global.config.WebSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -48,8 +48,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(controllers = AuthController.class, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtSecurityConfig.class),
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtFilter.class)})
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = WebSecurityConfig.class),
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @MockBean(JpaMetamodelMappingContext.class)
 @ActiveProfiles("local")
 class AuthControllerTest {
@@ -156,10 +156,12 @@ class AuthControllerTest {
         map.put("password", "1234");
 
         long now = (new Date()).getTime();
-        Date Expiration = new Date(now + 1000 * 60 * 60 * 24 * 7 * 4 * 6);
+        Date Expiration = new Date(now + 1000 * 60 * 60 * 24); //24시간
         TokenDto generatedTokenDto = TokenDto.builder()
-                .grantType("bearer").accessToken("{Jwt Access Token}")
-                .Expiration(Expiration.getTime())
+                .accessToken("{JWT Access Token}")
+                .accessTokenExpiration(Expiration.getTime()) //24시간
+                .refreshToken("{JWT Refresh Token}")
+                .refreshTokenExpiration(Expiration.getTime()*28) // 한달
                 .build();
 
         given(authService.login(any())).willReturn(generatedTokenDto);
@@ -183,12 +185,14 @@ class AuthControllerTest {
                                         .description("가입 비밀번호")
                         ),
                         responseFields(
-                                fieldWithPath("grantType").type(JsonFieldType.STRING)
-                                        .description("토큰 타입"),
                                 fieldWithPath("accessToken").type(JsonFieldType.STRING)
-                                        .description("Jwt Access 토큰"),
-                                fieldWithPath("expiration").type(JsonFieldType.NUMBER)
-                                        .description("Jwt Access 토큰 만료 기간")
+                                        .description("JWT ACCESS 토큰"),
+                                fieldWithPath("accessTokenExpiration").type(JsonFieldType.NUMBER)
+                                        .description("JWT Access 토큰 만료 기간"),
+                                fieldWithPath("refreshToken").type(JsonFieldType.STRING)
+                                        .description("JWT Refresh 토큰"),
+                                fieldWithPath("refreshTokenExpiration").type(JsonFieldType.NUMBER)
+                                        .description("JWT Refresh 토큰 만료 기간")
                         )
 
                 ));

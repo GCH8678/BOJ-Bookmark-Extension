@@ -8,8 +8,7 @@ import com.ch.bojbm.domain.bookmark.dto.BookmarkListResponseDto;
 import com.ch.bojbm.domain.bookmark.dto.TodayProblemDto;
 import com.ch.bojbm.domain.bookmark.dto.TodayProblemsResponseDto;
 import com.ch.bojbm.domain.notification.NotificationService;
-import com.ch.bojbm.global.auth.util.filter.JwtFilter;
-import com.ch.bojbm.global.config.JwtSecurityConfig;
+import com.ch.bojbm.global.auth.filter.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,8 +52,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith({RestDocumentationExtension.class})
 @WebMvcTest(controllers = BookmarkController.class, excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtSecurityConfig.class),
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtFilter.class)})
+        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class)})
 @MockBean(JpaMetamodelMappingContext.class)
 @ActiveProfiles("local")
 class BookmarkControllerTest {

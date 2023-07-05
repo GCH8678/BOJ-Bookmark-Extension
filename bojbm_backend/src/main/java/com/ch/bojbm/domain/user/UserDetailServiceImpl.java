@@ -13,23 +13,18 @@ import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailService implements UserDetailsService {
+public class UserDetailServiceImpl implements UserDetailsService {
     private final UsersRepository usersRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return usersRepository.findByEmail(username)
-                .map(this::createUserDetails)
+    public UserDetailsImpl loadUserByUsername(String username) throws UsernameNotFoundException {
+        Users findUsers = usersRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username + " 을 DB에서 찾을 수 없습니다"));
-    }
+        if(findUsers != null){
+            UserDetailsImpl userDetails = new UserDetailsImpl(findUsers);
+            return userDetails;
+        }
 
-    private UserDetails createUserDetails(Users users) {
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(users.getAuthority().toString());
-
-        return new User(
-                users.getEmail(),
-                users.getPassword(),
-                Collections.singleton(grantedAuthority)
-        );
+        return null;
     }
 }

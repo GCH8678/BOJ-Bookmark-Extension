@@ -2,9 +2,8 @@ package com.ch.bojbm.domain.mail;
 
 
 import com.ch.bojbm.domain.bookmark.Bookmark;
-import com.ch.bojbm.domain.user.UserService;
 import com.ch.bojbm.global.auth.dto.EmailRequestDto;
-import com.ch.bojbm.global.redis.RedisUtil;
+import com.ch.bojbm.global.redis.RedisService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,7 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
-    private final RedisUtil redisUtil;
+    private final RedisService redisService;
     //private final UserService userService;
 
     /**
@@ -95,7 +94,7 @@ public class EmailService {
         }
         
         // 5분간 유효
-        redisUtil.setDataExpire(authKey,email,60*5L);
+        redisService.setDataExpire(authKey,email,1000*60*5L);
     }
 
 
