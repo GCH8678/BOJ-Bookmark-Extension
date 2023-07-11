@@ -19,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
@@ -36,6 +37,8 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
@@ -161,7 +164,7 @@ class AuthControllerTest {
                 .accessToken("{JWT Access Token}")
                 .accessTokenExpiration(Expiration.getTime()) //24시간
                 .refreshToken("{JWT Refresh Token}")
-                .refreshTokenExpiration(Expiration.getTime()*28) // 한달
+                .refreshTokenExpiration(Expiration.getTime() * 28) // 한달
                 .build();
 
         given(authService.login(any())).willReturn(generatedTokenDto);
@@ -197,6 +200,147 @@ class AuthControllerTest {
 
                 ));
     }
+
+
+    @Test
+    @DisplayName("[API][POST] AccessToken 유효성 검사 - 성공(유효한 토큰)")
+    void validateAccessTokenSuccess() throws Exception {
+
+        given(authService.validate(any())).willReturn(false);
+
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/validate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer {Jwt Access Token}")
+                .characterEncoding("UTF-8")
+        );
+        act.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("auth/validate-success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("jwt Access Token")
+                        )
+                ));
+    }
+
+    @Test
+    @DisplayName("[API][POST] AccessToken 유효성 검사 - 실패(만료된 토큰)")
+    void validateAccessTokenFail() throws Exception {
+        given(authService.validate(any())).willReturn(true);
+
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/validate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer {Jwt Access Token}")
+                .characterEncoding("UTF-8")
+        );
+        act.andExpect(status().isUnauthorized())
+                .andDo(print())
+                .andDo(document("auth/validate-success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("jwt Access Token")
+                        )
+                ));
+
+    }
+
+
+    @Test
+    @DisplayName("[API][POST] JWT Token 재발급 - 성공 ")
+    void reissueTokenSuccess() throws Exception {
+        long now = (new Date()).getTime();
+        Date Expiration = new Date(now + 1000 * 60 * 60 * 24); //24시간
+        TokenDto reissuedTokenDto = TokenDto.builder()
+                .accessToken("{JWT Access Token}")
+                .accessTokenExpiration(Expiration.getTime()) //24시간
+                .refreshToken("{JWT Refresh Token}")
+                .refreshTokenExpiration(Expiration.getTime() * 28) // 한달
+                .build();
+
+        given(authService.reissue(any(), any())).willReturn(reissuedTokenDto);
+
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/reissue")
+                .accept(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer {JWT Access Token}")
+                .header("refresh-token", "{JWT Refresh Token}")
+                .characterEncoding("UTF-8")
+        );
+        act.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("auth/reissue-success",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("JWT Access Token"),
+                                headerWithName("refresh-token")
+                                        .description("JWT Refresh Token")
+                        ),
+                        responseFields(
+                                fieldWithPath("accessToken").type(JsonFieldType.STRING)
+                                        .description("JWT ACCESS 토큰"),
+                                fieldWithPath("accessTokenExpiration").type(JsonFieldType.NUMBER)
+                                        .description("JWT Access 토큰 만료 기간"),
+                                fieldWithPath("refreshToken").type(JsonFieldType.STRING)
+                                        .description("JWT Refresh 토큰"),
+                                fieldWithPath("refreshTokenExpiration").type(JsonFieldType.NUMBER)
+                                        .description("JWT Refresh 토큰 만료 기간")
+                        )
+                ));
+
+    }
+
+    @Test
+    @DisplayName("[API][POST] JWT Token 재발급 - 실패 ")
+    void reissueTokenFail() throws Exception {
+
+        given(authService.reissue(any(), any())).willReturn(null);
+
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/reissue")
+                .header("Authorization", "Bearer {JWT Access Token}")
+                .header("refresh-token", "{JWT Refresh Token}")
+                .characterEncoding("UTF-8")
+        );
+        act.andExpect(status().isUnauthorized())
+                .andDo(print())
+                .andDo(document("auth/reissue-fail",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("JWT Access Token"),
+                                headerWithName("refresh-token")
+                                        .description("JWT Refresh Token")
+                        )
+                ));
+
+    }
+    
+    @Test
+    @DisplayName("[API][POST] 로그아웃")
+    void logout() throws Exception{
+
+        ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/logout")
+                .header("Authorization", "Bearer {JWT Access Token}")
+                .characterEncoding("UTF-8"));
+
+        act.andExpect(status().isOk())
+                .andDo(print())
+                .andDo(document("auth/reissue-fail",
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName(HttpHeaders.AUTHORIZATION)
+                                        .description("JWT Access Token")
+                        )
+                ));
+
+    }
+
 
     @Test
     @DisplayName("[API][POST] 가입 인증 이메일 발송 성공")
@@ -428,12 +572,12 @@ class AuthControllerTest {
 
 
     @Test
-    @DisplayName("[API][Post] 비밀번호 변경 - 성공")
+    @DisplayName("[API][POST] 비밀번호 변경 - 성공")
     void setMemberPasswordSuccess() throws Exception {
         Map<String, Object> map = new HashMap<>();
         map.put("authCode", "{Auth Code}");
         map.put("email", "test@test.com");
-        map.put("password","4321");
+        map.put("password", "4321");
 
         given(userService.changeMemberPassword(any())).willReturn(ChangeMemberPasswordResponseDto.of("비밀번호가 변경되었습니다."));
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/password/change")
@@ -449,7 +593,7 @@ class AuthControllerTest {
                         preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("authCode").type(JsonFieldType.STRING)
-                                                .description("인증 코드 번호"),
+                                        .description("인증 코드 번호"),
                                 fieldWithPath("email").type(JsonFieldType.STRING)
                                         .description("유저 이메일"),
                                 fieldWithPath("password").type(JsonFieldType.STRING)
@@ -461,13 +605,14 @@ class AuthControllerTest {
                         )
                 ));
     }
+
     @Test
-    @DisplayName("[API][Post] 비밀번호 변경 - 실패 (잘못된 인증코드 나 다양한 이유로)")
+    @DisplayName("[API][POST] 비밀번호 변경 - 실패 (잘못된 인증코드 나 다양한 이유로)")
     void setMemberPasswordFail() throws Exception {
         Map<String, Object> map = new HashMap<>();
         map.put("authCode", "{Auth Code}");
         map.put("email", "test@test.com");
-        map.put("password","4321");
+        map.put("password", "4321");
 
         given(userService.changeMemberPassword(any())).willThrow(new IllegalArgumentException("잘못된 요청 입니다."));
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/password/change")

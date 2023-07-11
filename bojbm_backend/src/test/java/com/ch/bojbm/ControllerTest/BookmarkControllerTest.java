@@ -121,12 +121,10 @@ class BookmarkControllerTest {
         TodayProblemDto problem1 = TodayProblemDto.builder()
                 .problemTitle("1번 문제")
                 .problemNum(1000)
-                .memo("좋은 문제라 다음에 다시 풀어보고 싶음")
                 .build();
         TodayProblemDto problem2 = TodayProblemDto.builder()
                 .problemTitle("2번 문제")
                 .problemNum(2345)
-                .memo("자주 틀리는 유형이라 북마크 함")
                 .build();
         List<TodayProblemDto> problemList = List.of(problem1, problem2);
         given(bookmarkService.getTodayProblemList(any()))
@@ -143,8 +141,7 @@ class BookmarkControllerTest {
                         responseFields(
                                 fieldWithPath("problemList").type(JsonFieldType.ARRAY).description("오늘 풀 북마크 문제 목록 (빈 배열도 반환)"),
                                 fieldWithPath("problemList.[].problemNum").type(JsonFieldType.NUMBER).description("문제 번호"),
-                                fieldWithPath("problemList.[].problemTitle").type(JsonFieldType.STRING).description("문제 제목"),
-                                fieldWithPath("problemList.[].memo").type(JsonFieldType.STRING).description("유저가 남긴 해당 북마크 메모")
+                                fieldWithPath("problemList.[].problemTitle").type(JsonFieldType.STRING).description("문제 제목")
                         )
                 ));
         //then
@@ -158,7 +155,6 @@ class BookmarkControllerTest {
         Map<String, Object> map = new HashMap<>();
         map.put("problemId", 1107);
         map.put("problemTitle", "리모컨");
-        map.put("memo", "혼자선 너무 어려움, 풀이보니 쉬움 ???");
         map.put("afterDay", 7);
 
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/bookmark")
@@ -178,9 +174,7 @@ class BookmarkControllerTest {
                                 fieldWithPath("afterDay").type(JsonFieldType.NUMBER)
                                         .description("n일 뒤 알림"),
                                 fieldWithPath("problemTitle").type(JsonFieldType.STRING)
-                                        .description("문제 제목"),
-                                fieldWithPath("memo").type(JsonFieldType.STRING)
-                                        .description("유저가 남긴 메모")
+                                        .description("문제 제목")
                         )
                 ));
     }
@@ -191,7 +185,6 @@ class BookmarkControllerTest {
     void updateBookmark() throws Exception {
         Map<String, Object> map = new HashMap<>();
         map.put("problemId", 1107);
-        map.put("memo", "혼자선 너무 어려움, 풀이보니 쉬움 ???");
         map.put("afterDay", 7);
 
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.put("/api/bookmark")
@@ -208,9 +201,7 @@ class BookmarkControllerTest {
                                 fieldWithPath("problemId").type(JsonFieldType.NUMBER)
                                         .description("문제 번호"),
                                 fieldWithPath("afterDay").type(JsonFieldType.NUMBER)
-                                        .description("n일 뒤 알림"),
-                                fieldWithPath("memo").type(JsonFieldType.STRING)
-                                        .description("유저가 남긴 메모")
+                                        .description("n일 뒤 알림")
 
                         )
                 ));
