@@ -1,11 +1,10 @@
 package com.ch.bojbm.domain.mail;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
-@Setter
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Builder
 public class EmailMessageDto {
     private String to;

@@ -1,14 +1,11 @@
 package com.ch.bojbm.domain.user.dto;
 
 import com.ch.bojbm.domain.user.Users;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
 @AllArgsConstructor
-@NoArgsConstructor
 @Builder
 public class UsersResponseDto {
     private String email;

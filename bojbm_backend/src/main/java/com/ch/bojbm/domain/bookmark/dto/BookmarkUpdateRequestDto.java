@@ -1,15 +1,11 @@
 package com.ch.bojbm.domain.bookmark.dto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class BookmarkUpdateRequestDto {
     private Integer problemId;
-    private String memo;
     private Integer afterDay;
 }

@@ -1,9 +1,10 @@
 package com.ch.bojbm.global.auth.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Builder
 public class CodeCheckedDto {
     private Boolean checked;

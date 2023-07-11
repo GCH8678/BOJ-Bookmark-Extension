@@ -30,7 +30,7 @@ public class Bookmark extends BaseEntity {
     @JoinColumn(name = "notification_id")
     private Notification notification;
 
-    private String memo;
+    ///private String memo;
     //private LocalDate notificationDate;
     //private Boolean isChecked;  // TODO : 이후 웹앱등에서 푼 문제인지 확인할 수 있도록
 
@@ -46,9 +46,6 @@ public class Bookmark extends BaseEntity {
 
     public void setNotification(Notification notification) {
         this.notification = notification;
-    }
-    public void setMemo(String memo){
-        this.memo = memo;
     }
     //    public void setNotificationDate(LocalDate notificationDate){
 //        this.notificationDate=notificationDate;

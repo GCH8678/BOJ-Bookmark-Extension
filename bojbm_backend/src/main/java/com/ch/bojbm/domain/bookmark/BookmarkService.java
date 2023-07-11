@@ -54,7 +54,6 @@ public class BookmarkService {
             TodayProblemDto dto = TodayProblemDto.builder()
                     .problemTitle(bookmark.getProblemTitle())
                     .problemNum(bookmark.getProblemNum())
-                    .memo(bookmark.getMemo())
                     .build();
                     problemList.add(dto);
         }
@@ -76,7 +75,6 @@ public class BookmarkService {
                     .problemNum(dto.getProblemId())
                     .users(currentUsers)
                     .problemTitle(dto.getProblemTitle())
-                    .memo(dto.getMemo())
                     .build();
             newBookmark.setNotification(notificationService.addBookmarkInNotification(currentUsers, newBookmark, notificationDate));
             bookmarkJpaRepository.save(newBookmark);
@@ -120,7 +118,6 @@ public class BookmarkService {
         Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(dto.getProblemId(),currentUsers);
         Notification oldNotification = savedBookmark.getNotification();
         if (savedBookmark != null){
-            savedBookmark.setMemo(dto.getMemo());
             savedBookmark.setNotification(notificationService.addBookmarkInNotification(currentUsers,savedBookmark,newNotificationDate));
             bookmarkJpaRepository.saveAndFlush(savedBookmark);
             notificationService.checkAndDeleteNotification(oldNotification);

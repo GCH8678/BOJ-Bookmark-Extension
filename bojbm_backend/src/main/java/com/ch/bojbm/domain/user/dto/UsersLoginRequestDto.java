@@ -3,21 +3,17 @@ package com.ch.bojbm.domain.user.dto;
 
 import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.global.auth.entity.Authority;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
+@NoArgsConstructor(access= AccessLevel.PROTECTED)
 @AllArgsConstructor
-@NoArgsConstructor
-@Setter
+@Builder
 public class UsersLoginRequestDto {
 
     private String email;
-
     private String password;
 
 
