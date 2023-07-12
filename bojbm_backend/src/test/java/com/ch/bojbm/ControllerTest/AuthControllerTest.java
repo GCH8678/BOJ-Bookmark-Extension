@@ -210,7 +210,7 @@ class AuthControllerTest {
 
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/validate")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer {Jwt Access Token}")
+                .header("Authorization", "Bearer {JWT Access Token}")
                 .characterEncoding("UTF-8")
         );
         act.andExpect(status().isOk())
@@ -220,7 +220,7 @@ class AuthControllerTest {
                         preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)
-                                        .description("jwt Access Token")
+                                        .description("JWT Access Token")
                         )
                 ));
     }
@@ -232,17 +232,17 @@ class AuthControllerTest {
 
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/validate")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer {Jwt Access Token}")
+                .header("Authorization", "Bearer {JWT Access Token}")
                 .characterEncoding("UTF-8")
         );
         act.andExpect(status().isUnauthorized())
                 .andDo(print())
-                .andDo(document("auth/validate-success",
+                .andDo(document("auth/validate-fail",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestHeaders(
                                 headerWithName(HttpHeaders.AUTHORIZATION)
-                                        .description("jwt Access Token")
+                                        .description("JWT Access Token")
                         )
                 ));
 
@@ -265,6 +265,7 @@ class AuthControllerTest {
 
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/reissue")
                 .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer {JWT Access Token}")
                 .header("refresh-token", "{JWT Refresh Token}")
                 .characterEncoding("UTF-8")
@@ -301,6 +302,7 @@ class AuthControllerTest {
         given(authService.reissue(any(), any())).willReturn(null);
 
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/reissue")
+                .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer {JWT Access Token}")
                 .header("refresh-token", "{JWT Refresh Token}")
                 .characterEncoding("UTF-8")
@@ -319,18 +321,19 @@ class AuthControllerTest {
                 ));
 
     }
-    
+
     @Test
     @DisplayName("[API][POST] 로그아웃")
-    void logout() throws Exception{
+    void logout() throws Exception {
 
         ResultActions act = mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/logout")
                 .header("Authorization", "Bearer {JWT Access Token}")
+                .contentType(MediaType.APPLICATION_JSON)
                 .characterEncoding("UTF-8"));
 
         act.andExpect(status().isOk())
                 .andDo(print())
-                .andDo(document("auth/reissue-fail",
+                .andDo(document("auth/logout-success",
                         preprocessRequest(prettyPrint()),
                         preprocessResponse(prettyPrint()),
                         requestHeaders(
@@ -453,7 +456,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("[API][GET] 가입 이메일 인증 코드 확인 - 성공")
+    @DisplayName("[API][GET] 가입 이메일 인증 코드 검사 - 성공")
     void checkSignUpCodeSuccess() throws Exception {
 
         given(authService.checkCode(any(), any())).willReturn(true);
@@ -482,7 +485,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("[API][GET] 가입 이메일 인증 코드 확인 - 실패")
+    @DisplayName("[API][GET] 가입 이메일 인증 코드 검사 - 실패")
     void checkSignUpCodeFail() throws Exception {
 
         given(authService.checkCode(any(), any())).willReturn(false);
@@ -511,7 +514,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("[API][GET] 비밀번호 찾기 인증 코드 확인 - 성공")
+    @DisplayName("[API][GET] 비밀번호 찾기 인증 코드 검사 - 성공")
     void checkFindPasswordCodeSuccess() throws Exception {
 
 
@@ -541,7 +544,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("[API][GET] 비밀번호 찾기 인증 코드 확인 - 실패")
+    @DisplayName("[API][GET] 비밀번호 찾기 인증 코드 검사 - 실패")
     void checkFindPasswordCodeFail() throws Exception {
 
 

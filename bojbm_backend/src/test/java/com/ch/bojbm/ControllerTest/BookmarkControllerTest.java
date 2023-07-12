@@ -195,8 +195,8 @@ class BookmarkControllerTest {
         act.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("bookmark/update",
-                        preprocessRequest(),
-                        preprocessResponse(),
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         requestFields(
                                 fieldWithPath("problemId").type(JsonFieldType.NUMBER)
                                         .description("문제 번호"),
@@ -222,8 +222,8 @@ class BookmarkControllerTest {
         act.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("bookmark/check",
-                        preprocessRequest(),
-                        preprocessResponse(),
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         pathParameters(
                                 parameterWithName("problemNum").description("문제 번호")
                         ),
@@ -247,8 +247,8 @@ class BookmarkControllerTest {
         act.andExpect(status().isOk())
                 .andDo(print())
                 .andDo(document("bookmark/delete",
-                        preprocessRequest(),
-                        preprocessResponse(),
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
                         pathParameters(
                                 parameterWithName("problemNum").description("문제 번호")
                         )

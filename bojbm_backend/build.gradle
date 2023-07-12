@@ -83,7 +83,7 @@ asciidoctor {
 	// source가 없으면 .adoc파일을 전부 html로 만들어버림
 	// source 지정시 특정 adoc만 HTML로 만든다.
 	sources{
-		include("**/index.adoc","**/common/*.adoc")
+		include("**/index.adoc","**/common/*.adoc","**/*.adoc")
 	}
 	baseDirFollowsSourceFile()
 
@@ -103,7 +103,6 @@ build {
 	dependsOn copyDocument
 }
 
-// 9.
 bootJar {
 	dependsOn asciidoctor
 	from("${asciidoctor.outputDir}/html5") {
