@@ -17,7 +17,7 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(()->users.getAuthority().getKey());
+        authorities.add(()->users.getRole().getKey());
         return authorities;
     }
 

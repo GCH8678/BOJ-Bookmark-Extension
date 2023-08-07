@@ -76,7 +76,6 @@ public class WebSecurityConfig {
                 .and()
                 .headers()
                 .frameOptions().sameOrigin();
-        ;
         return http.build();
     }
 

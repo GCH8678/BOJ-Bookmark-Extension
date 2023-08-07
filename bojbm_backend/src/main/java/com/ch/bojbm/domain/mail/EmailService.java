@@ -79,8 +79,8 @@ public class EmailService {
     }
 
     private void sendAuthEmail(String email, String authKey){
-        String subject = "회원가입 인증번호입니다. ";
-        String text = " 회원 가입을 위한 인증번호는 "+ authKey + "입니다. <br>";
+        String subject = "[BOJ Bookmark Extension] 인증번호입니다.";
+        String text = " 인증번호는 "+ authKey + "입니다. <br>";
 
         try{
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();

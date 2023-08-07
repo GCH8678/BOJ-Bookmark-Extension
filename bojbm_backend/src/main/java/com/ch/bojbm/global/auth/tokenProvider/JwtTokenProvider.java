@@ -28,7 +28,6 @@ public class JwtTokenProvider implements InitializingBean { // Secret Key 값 �
     private final RedisService redisService;
 
     private static final String AUTHORITIES_KEY = "role";
-    private static final String BEARER_TYPE = "bearer";
     private static final String EMAIL_KEY = "email";
 
     private final Long accessTokenExpireTimeInMilliseconds;
@@ -57,7 +56,7 @@ public class JwtTokenProvider implements InitializingBean { // Secret Key 값 �
     //시크릿 키 설정
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet(){
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -100,7 +99,8 @@ public class JwtTokenProvider implements InitializingBean { // Secret Key 값 �
     // 토큰으로부터 정보 추출
     private Claims getClaims(String accessToken) {
         try {
-            return Jwts.parserBuilder().setSigningKey(signingKey).build().parseClaimsJws(accessToken).getBody();
+            return Jwts.parserBuilder().setSigningKey(signingKey).build()
+                    .parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
         }

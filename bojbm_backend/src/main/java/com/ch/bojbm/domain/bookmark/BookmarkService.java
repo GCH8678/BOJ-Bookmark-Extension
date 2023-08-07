@@ -4,6 +4,7 @@ package com.ch.bojbm.domain.bookmark;
 import com.ch.bojbm.domain.bookmark.dto.*;
 import com.ch.bojbm.domain.notification.Notification;
 import com.ch.bojbm.domain.notification.NotificationService;
+import com.ch.bojbm.domain.user.UserDetailsImpl;
 import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.domain.user.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,7 +27,7 @@ public class BookmarkService {
 
     private final NotificationService notificationService;
 
-    public BookmarkListResponseDto getAllBookmarks(User user){
+    public BookmarkListResponseDto getAllBookmarks(UserDetailsImpl user){
         Users currentUsers = getUsers(user.getUsername());
         List<BookmarkInListResponseDto> bookmarks = new ArrayList<>();
         Iterator<Bookmark> iterator = bookmarkJpaRepository.findAllByUsers(currentUsers).iterator();
@@ -40,7 +41,7 @@ public class BookmarkService {
                 .build();
     }
 
-    public TodayProblemsResponseDto getTodayProblemList(User user){
+    public TodayProblemsResponseDto getTodayProblemList(UserDetailsImpl user){
         Notification todayNotification = notificationService.getTodayNotification(user);
         List<TodayProblemDto> problemList = new ArrayList<>();
 
@@ -63,7 +64,7 @@ public class BookmarkService {
     }
 
 
-    public void addBookmark(User user, BookmarkCreateRequestDto dto){
+    public void addBookmark(UserDetailsImpl user, BookmarkCreateRequestDto dto){
 
         Users currentUsers = getUsers(user.getUsername());
         LocalDate notificationDate = LocalDate.now().plusDays(dto.getAfterDay());
@@ -81,7 +82,7 @@ public class BookmarkService {
         }else throw new RuntimeException("이미 존재하는 북마크입니다.");
     }
 
-    public boolean checkBookmark(User user, Integer problemNum){
+    public boolean checkBookmark(UserDetailsImpl user, Integer problemNum){
         Users currentUsers = getUsers(user.getUsername());
         Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
 
@@ -94,7 +95,7 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deleteBookmark(User user, Integer problemNum) {
+    public void deleteBookmark(UserDetailsImpl user, Integer problemNum) {
         
         Users currentUsers = getUsers(user.getUsername());
         Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
@@ -111,7 +112,7 @@ public class BookmarkService {
 
 
     @Transactional
-    public void updateBookmark(User user, BookmarkUpdateRequestDto dto){
+    public void updateBookmark(UserDetailsImpl user, BookmarkUpdateRequestDto dto){
         Users currentUsers = getUsers(user.getUsername());
         LocalDate newNotificationDate = LocalDate.now().plusDays(dto.getAfterDay());
 

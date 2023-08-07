@@ -3,7 +3,7 @@ package com.ch.bojbm.domain.user;
 import com.ch.bojbm.domain.BaseEntity;
 import com.ch.bojbm.domain.bookmark.Bookmark;
 import com.ch.bojbm.domain.notification.Notification;
-import com.ch.bojbm.global.auth.entity.Authority;
+import com.ch.bojbm.global.auth.entity.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,7 +26,7 @@ public class Users extends BaseEntity{
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Authority authority;
+    private Role role;
 
     @OneToMany(mappedBy= "users",cascade=CascadeType.ALL, orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();
@@ -41,10 +41,10 @@ public class Users extends BaseEntity{
     
     // TODO : 정적 팩토리 메서드 패턴으로 유저를 생성하는 게 좀 더 이해하기 좋은 코드가 될 듯 (생성 메서드)
     @Builder
-    public Users(String email, String password, Authority authority) {
+    public Users(String email, String password, Role role) {
         this.email=email;
         this.password=password;
-        this.authority=authority;
+        this.role = role;
     }
 
 

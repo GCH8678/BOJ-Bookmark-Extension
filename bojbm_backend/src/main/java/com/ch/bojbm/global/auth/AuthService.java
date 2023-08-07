@@ -36,12 +36,13 @@ public class AuthService {
 
     @Transactional
     public boolean signup(SignUpRequestDto requestDto) {
-        if (usersRepository.existsByEmail(requestDto.getEmail())) {
+        if (usersRepository.existsByEmail(requestDto.getEmail()) || !redisService.getData(requestDto.getAuthCode()).equalsIgnoreCase(requestDto.getEmail())) {
             return false;
         }
 
         Users users = requestDto.toUsersEntity(passwordEncoder);
         usersRepository.save(users);
+        redisService.deleteData(requestDto.getAuthCode());
         return true;
     }
 
@@ -145,7 +146,6 @@ public class AuthService {
     public boolean checkCode(String authCode,String email) {
         boolean checkedCode = email.equals(redisService.getData(authCode));
         if(checkedCode){
-            redisService.deleteData(authCode);
             return true;
         }
         return false;
