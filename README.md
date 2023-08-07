@@ -20,7 +20,6 @@
 ## 사용방법
 1. Chrome Web Store 에서 BOJ Bookmark Extension 설치합니다.
 - https://chrome.google.com/webstore/detail/boj-bookmark-extension/agniolplkhialjmfebfphdlgchnikpib?hl=ko&authuser=0
-<br>
 
 2. 크롬 확장을 설치 후 크롬 확장 프로그램을 고정해 줍니다.<br>
 ![extensionPin](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/305dd061-6464-4112-a372-5882c37362ac)
@@ -30,8 +29,9 @@
 
 4. 회원이 아니라면 Sign Up/Find Password 버튼을 클릭하여 회원가입을 합니다. (새탭을 통해 열림)<br>
 ![signUp](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/cfacbc15-b3e3-48c2-bed8-e515dab0ae00)
-<br>
+
 - 비밀번호를 찾으려면 위 사진의 빨간색 화살표가 가리키는 링크를 클릭하면 비밀번호 찾기 페이지로 이동합니다. <br> 회원가입과 유사한 방법으로 비밀번호를 재설정 합니다. <br>
+
 ![findPw](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/abf826b7-38bd-4192-a0a9-cc2f70926d33)
 
 5. 로그인 후 당일 풀어야하는 문제가 없다면 다음과 같이 표시됩니다.
@@ -70,6 +70,7 @@ AfterDay를 선택하거나 또는 캘린더 표시를 클릭하여 알림을 �
 - **Database** : MySQL
 - **ORM** : Jpa
 - **Dependencies** : Spring Security, Jwt
+- **Server** : AWS
 
 # Frontend
 
