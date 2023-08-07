@@ -19,19 +19,16 @@
 
 ## 사용방법
 1. Chrome Web Store 에서 BOJ Bookmark Extension 설치합니다.
-<br>
--https://chrome.google.com/webstore/detail/boj-bookmark-extension/agniolplkhialjmfebfphdlgchnikpib?hl=ko&authuser=0
+- https://chrome.google.com/webstore/detail/boj-bookmark-extension/agniolplkhialjmfebfphdlgchnikpib?hl=ko&authuser=0
 <br>
 
-2. 크롬 확장을 설치 후 크롬 확장 프로그램을 고정해 줍니다.
-<br>
+2. 크롬 확장을 설치 후 크롬 확장 프로그램을 고정해 줍니다.<br>
 ![extensionPin](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/305dd061-6464-4112-a372-5882c37362ac)
 
-3. 고정이 완료되면 Popup창을 통해 로그인을 합니다.
-<br>
+3. 고정이 완료되면 Popup창을 통해 로그인을 합니다.<br>
 ![login](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/80347961-1bb0-4f49-be2b-cb4bdd043d0f)
 
-4. 회원이 아니라면 Sign Up/Find Password 버튼을 클릭하여 회원가입을 합니다. (새탭을 통해 열림)
+4. 회원이 아니라면 Sign Up/Find Password 버튼을 클릭하여 회원가입을 합니다. (새탭을 통해 열림)<br>
 ![signUp](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/cfacbc15-b3e3-48c2-bed8-e515dab0ae00)
 <br>
 - 비밀번호를 찾으려면 위 사진의 빨간색 화살표가 가리키는 링크를 클릭하면 비밀번호 찾기 페이지로 이동합니다. <br> 회원가입과 유사한 방법으로 비밀번호를 재설정 합니다. <br>
@@ -48,15 +45,14 @@
 AfterDay를 선택하거나 또는 캘린더 표시를 클릭하여 알림을 받을 일자를 선택한 뒤 '저장' 버튼을 클릭합니다.<br>
 ![bookmarkAdd](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/ee019efb-3d92-42b6-a6a1-7ca70bec2f62)
 
-8. 북마크가 완료되면 다음과 같이 비어있던 북마크 표시가 채워집니다.
+8. 북마크가 완료되면 다음과 같이 비어있던 북마크 표시가 채워집니다.<br>
 ![bookmarked](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/e57266fd-8b3b-484a-9885-efb842079370)
 
 9. 채워진 북마크 표시를 다시 클릭하면 다음과 같이 알림일자를 수정하거나 북마크를 취소할 수 있는 팝업이 나타납니다.<br>
 ![bookmarkDel](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/a984b638-9d94-41fb-b01b-77fdee285089)
 
 10. 오늘 풀어야 하는 문제가 있다면 Popup창에서 다음과 같이 나타납니다.<br>
-클릭하면 해당 백준 문제 페이지로 이동합니다.
-<br>
+클릭하면 해당 백준 문제 페이지로 이동합니다.<br>
 ![popup](https://github.com/GCH8678/boj-bookmark-extension/assets/95828987/6c3b7f26-ef73-4fa2-aff5-1608f69f6499)
 
 <br>
