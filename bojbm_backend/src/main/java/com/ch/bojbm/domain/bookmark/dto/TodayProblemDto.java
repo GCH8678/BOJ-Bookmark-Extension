@@ -6,8 +6,7 @@ import lombok.*;
 @NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class BookmarkCreateRequestDto {
-    private Integer problemId;
+public class TodayProblemDto {
+    private Integer problemNum;
     private String problemTitle;
-    private Integer afterDay;
 }

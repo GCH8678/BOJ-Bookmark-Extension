@@ -1,0 +1,247 @@
+ifndef::snippets[]
+:snippets: ../../../build/generated-snippets
+endif::[]
+
+
+
+= 인증,인가 관련 API
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:toc-title: Table of Contents
+:sectlinks:
+
+
+BOJ Bookmark Extension 크롬 확장 프로그램의 +
+인증 및 인가와 관련된 API 문서입니다.
+
+[[Auth-회원가입]]
+== 유저 회원가입 요청
+=== `POST /api/auth/signup`
+이메일과 비밀번호를 받아 회원가입을 시도합니다. +
+회원가입에 성공하면 ( status : 200 OK )와 회원가입 성공 메시지를 반환합니다.
+회원가입에 실패하면 ( status : 409 Conflict )와 회원가입 실패 메시지를 반환합니다.
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 409 Conflict
+|===
+
+operation::auth/signup-success[snippets='http-request,request-fields']
+==== HTTP response - 성공
+include::{snippets}/auth/signup-success/http-response.adoc[]
+==== response fields - 성공
+include::{snippets}/auth/signup-success/response-fields.adoc[]
+==== HTTP response - 실패
+include::{snippets}/auth/signup-fail/http-response.adoc[]
+==== response fields - 실패
+include::{snippets}/auth/signup-fail/response-fields.adoc[]
+
+[[Auth-로그인]]
+== 유저 로그인 요청
+=== `POST /api/auth/login`
+이메일과 비밀번호를 받아 로그인을 시도합니다. +
+
+로그인에 성공하면 ( status : 200 OK ) 와 생성된 JWT Token을 반환합니다. +
+로그인에 실패하면 ( status : 401 Unauthorized ) 를 반환합니다. +
+
+( 유효하지 않은 자격 증명시 필터에 의해 자동으로 401 응답코드 반환 )
+
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 401 Unauthorized
+|===
+
+operation::auth/login-success[snippets='http-request,request-fields']
+==== HTTP response - 성공
+include::{snippets}/auth/login-success/http-response.adoc[]
+==== response fields - 성공
+include::{snippets}/auth/login-success/response-fields.adoc[]
+==== HTTP response - 실패
+[source,http,options="nowrap"]
+----
+HTTP/1.1 401 Unauthorized
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Length: 58
+----
+
+[[Auth-AccessToken-유효성-검사]]
+== JWT Access Token 유효성 검사
+=== `POST /api/auth/validate`
+Authorization 헤더의 JWT Access Token 유효성을 검사합니다. +
+
+유효성 검사에 성공하면 ( status : 200 OK ) 을 반환합니다. +
+유효성 검사에 실패하면 ( status : 401 Unauthorized ) 을 반환합니다.
+
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 401 Unauthorized
+|===
+
+operation::auth/validate-success[snippets='http-request,request-headers']
+==== HTTP response - 성공
+include::{snippets}/auth/validate-success/http-response.adoc[]
+==== HTTP response - 실패
+include::{snippets}/auth/validate-fail/http-response.adoc[]
+
+
+[[Auth-JWT-Token-재발급]]
+== JWT Token 재발급
+=== `POST /api/auth/reissue`
+Authorization 헤더의 JWT Access Token, +
+refresh-token 헤더의 JWT Refresh Token 유효성을 검사하고 +
+새로운 JWT Token을 발급 합니다.
+
+재발급에 성공하면 ( status : 200 OK ) 와 새로운 JWT Token을 반환합니다. +
+재발급에 실패하면 ( status : 401 Unauthorized ) 을 반환합니다.
+
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 401 Unauthorized
+|===
+
+operation::auth/reissue-success[snippets='http-request,request-headers']
+==== HTTP response - 성공
+include::{snippets}/auth/reissue-success/http-response.adoc[]
+==== response fields - 성공
+include::{snippets}/auth/reissue-success/response-fields.adoc[]
+==== HTTP response - 실패
+include::{snippets}/auth/reissue-fail/http-response.adoc[]
+
+[[Auth-로그아웃]]
+== 유저 로그아웃 요청
+=== `POST /api/auth/logout`
+JWT Access Token 을 받아 로그아웃을 시도합니다. +
+
+응답 확인만 가능 ( status : OK )
+
+operation::auth/logout-success[snippets='http-request,request-headers,http-response']
+
+[[Auth-가입-인증-이메일-발송]]
+== 가입 인증 이메일 발송
+=== `POST /api/auth/signup/email`
+이메일을 받아 해당 이메일로 인증 코드를 발송합니다. +
+
+발송에 성공하면 ( status : 200 OK ) 을 반환합니다. +
+발송에 실패하면 ( status : 409 Conflict ) 을 반환합니다.
+
+( 이미 존재하는 회원 이메일인 경우 409 응답코드 반환 )
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 409 Conflict
+|===
+
+
+operation::auth/signup-auth-email-success[snippets='http-request,request-fields']
+
+==== HTTP response - 성공
+include::{snippets}/auth/signup-auth-email-success/http-response.adoc[]
+==== HTTP response - 실패
+include::{snippets}/auth/signup-auth-email-fail/http-response.adoc[]
+
+[[Auth-비밀번호-변경-인증-이메일-발송]]
+== 비밀번호 변경 인증 이메일 발송
+=== `POST /api/auth/password/email`
+이메일을 받아 해당 이메일로 인증 코드를 발송합니다. +
+
+발송에 성공하면 ( status : 200 OK ) 을 반환합니다. +
+발송에 실패하면 ( status : 404 Not Found ) 을 반환합니다.
+
+( 존재하지 않는 회원 이메일인 경우 404 응답코드 반환 )
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 404 Not Found
+|===
+
+
+operation::auth/find-password-auth-email-success[snippets='http-request,request-fields']
+
+==== HTTP response - 성공
+include::{snippets}/auth/find-password-auth-email-success/http-response.adoc[]
+==== HTTP response - 실패
+include::{snippets}/auth/find-password-auth-email-fail/http-response.adoc[]
+
+[[Auth-회원가입-인증-코드-검사]]
+== 회원가입 인증 코드 검사
+=== `GET /api/auth/signup/code?email={email}&authCode={authcode}`
+이메일과 인증코드를 받아 유효한 인증 코드인지 확인합니다. +
+
+검사에 성공하면 ( status : 200 OK ) 와 인증성공 여부를 반환합니다. +
+검사에 실패하면 ( status : 400 Bad Request ) 와 인증성공 여부를 반환합니다.
+
+( 존재하지 않는 회원 이메일인 경우 404 응답코드 반환 )
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 400 Bad Request
+|===
+
+operation::auth/check-signup-code-success[snippets='http-request,query-parameters']
+==== HTTP response - 성공
+include::{snippets}/auth/check-signup-code-success/http-response.adoc[]
+==== HTTP response - 실패
+include::{snippets}/auth/check-signup-code-fail/http-response.adoc[]
+operation::auth/check-signup-code-success[snippets='response-fields']
+
+[[Auth-비밀번호-변경-인증-코드-검사]]
+== 비밀번호 변경 인증 코드 검사
+=== `GET /api/auth/password/code?email={email}&authCode={authcode}`
+이메일과 인증코드를 받아 유효한 인증 코드인지 확인합니다. +
+
+검사에 성공하면 ( status : 200 OK ) 와 인증성공 여부를 반환합니다. +
+검사에 실패하면 ( status : 400 Bad Request ) 와 인증성공 여부를 반환합니다.
+
+( 존재하지 않는 회원 이메일인 경우 404 응답코드 반환 )
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 400 Bad Request
+|===
+
+operation::auth/check-find-password-code-success[snippets='http-request,query-parameters']
+==== HTTP response - 성공
+include::{snippets}/auth/check-find-password-code-success/http-response.adoc[]
+==== HTTP response - 실패
+include::{snippets}/auth/check-find-password-code-fail/http-response.adoc[]
+operation::auth/check-find-password-code-success[snippets='response-fields']
+
+[[Auth-비밀번호-변경]]
+== 비밀번호 변경 요청
+=== `POST /api/auth/password/change`
+이메일,인증코드 및 새로운 비밀번호를 받아 비밀번호 변경을 요청합니다.
+
+변경에 성공하면 ( status : 200 OK ) 와 응답 성공 메시지를 반환합니다.
+변경에 실패하면 ( status : Unauthorized ) 을 반환합니다.
+
+|===
+| Success | HttpStatus
+
+| `+True+` | 200 OK
+| `+False+` | 401 Unauthorized
+|===
+
+operation::auth/set-member-password-success[snippets='http-request,request-fields']
+==== HTTP response - 성공
+include::{snippets}/auth/set-member-password-success/http-response.adoc[]
+==== response fields - 성공
+include::{snippets}/auth/set-member-password-success/response-fields.adoc[]
+==== HTTP response - 실패
+include::{snippets}/auth/set-member-password-fail/http-response.adoc[]

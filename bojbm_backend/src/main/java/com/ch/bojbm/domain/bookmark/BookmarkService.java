@@ -1,11 +1,10 @@
 package com.ch.bojbm.domain.bookmark;
 
 
-import com.ch.bojbm.domain.bookmark.dto.BookmarkInListResponseDto;
-import com.ch.bojbm.domain.bookmark.dto.BookmarkListResponseDto;
-import com.ch.bojbm.domain.bookmark.dto.TodayProblemsResponseDto;
+import com.ch.bojbm.domain.bookmark.dto.*;
 import com.ch.bojbm.domain.notification.Notification;
 import com.ch.bojbm.domain.notification.NotificationService;
+import com.ch.bojbm.domain.user.UserDetailsImpl;
 import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.domain.user.UsersRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,9 +24,10 @@ import java.util.*;
 public class BookmarkService {
     private final BookmarkJpaRepository bookmarkJpaRepository;
     private final UsersRepository usersRepository;
+
     private final NotificationService notificationService;
 
-    public BookmarkListResponseDto getBookmarkList(User user){
+    public BookmarkListResponseDto getAllBookmarks(UserDetailsImpl user){
         Users currentUsers = getUsers(user.getUsername());
         List<BookmarkInListResponseDto> bookmarks = new ArrayList<>();
         Iterator<Bookmark> iterator = bookmarkJpaRepository.findAllByUsers(currentUsers).iterator();
@@ -41,47 +41,48 @@ public class BookmarkService {
                 .build();
     }
 
-    public TodayProblemsResponseDto getTodayProblemList(User user){
-        //TODO : todayNotification 값이 null값인 경우 해결
+    public TodayProblemsResponseDto getTodayProblemList(UserDetailsImpl user){
         Notification todayNotification = notificationService.getTodayNotification(user);
-        List<Integer> problemNums = new ArrayList<>();
+        List<TodayProblemDto> problemList = new ArrayList<>();
 
          if(todayNotification == null) {
-             return TodayProblemsResponseDto.builder().problemNumList(problemNums).build();
+             // todayNotification 이 널인 경우 => 빈값
+             return TodayProblemsResponseDto.builder().problemList(problemList).build();
          }
 
         Set<Bookmark> bookmarks = todayNotification.getBookmarks();
-        Iterator<Bookmark> iterator = bookmarks.iterator();
-        while(iterator.hasNext()){
-            Bookmark temp = iterator.next();
-            Integer dto = temp.getProblemNum();
-            problemNums.add(dto);
+        for(Bookmark bookmark : bookmarks){
+            TodayProblemDto dto = TodayProblemDto.builder()
+                    .problemTitle(bookmark.getProblemTitle())
+                    .problemNum(bookmark.getProblemNum())
+                    .build();
+                    problemList.add(dto);
         }
         return TodayProblemsResponseDto.builder()
-                .problemNumList(problemNums)
+                .problemList(problemList)
                 .build();
     }
 
 
-    public void addBookmark(User user, int problemNum, int afterDay){
+    public void addBookmark(UserDetailsImpl user, BookmarkCreateRequestDto dto){
 
         Users currentUsers = getUsers(user.getUsername());
-        LocalDate notificationDate = LocalDate.now().plusDays(afterDay);
+        LocalDate notificationDate = LocalDate.now().plusDays(dto.getAfterDay());
 
-        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
+        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(dto.getProblemId(),currentUsers);
 
         if(savedBookmark == null){
-
             Bookmark newBookmark = Bookmark.builder()
-                    .problemNum(problemNum)
+                    .problemNum(dto.getProblemId())
                     .users(currentUsers)
+                    .problemTitle(dto.getProblemTitle())
                     .build();
             newBookmark.setNotification(notificationService.addBookmarkInNotification(currentUsers, newBookmark, notificationDate));
             bookmarkJpaRepository.save(newBookmark);
         }else throw new RuntimeException("이미 존재하는 북마크입니다.");
     }
 
-    public boolean checkBookmark(User user, Integer problemNum){
+    public boolean checkBookmark(UserDetailsImpl user, Integer problemNum){
         Users currentUsers = getUsers(user.getUsername());
         Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
 
@@ -94,15 +95,16 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deleteBookmark(User user, Integer problemNum) {
+    public void deleteBookmark(UserDetailsImpl user, Integer problemNum) {
         
         Users currentUsers = getUsers(user.getUsername());
         Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
         Notification notification = savedBookmark.getNotification();
 
         if(savedBookmark != null){
-            notificationService.checkAndDeleteNotification(notification);
             bookmarkJpaRepository.delete(savedBookmark);
+            bookmarkJpaRepository.flush();
+            notificationService.checkAndDeleteNotification(notification);
         }else throw new RuntimeException("이미 존재하지 않는 북마크입니다.");
 
 
@@ -110,16 +112,16 @@ public class BookmarkService {
 
 
     @Transactional
-    public void updateBookmark(User user, Integer problemNum, int afterDay){
+    public void updateBookmark(UserDetailsImpl user, BookmarkUpdateRequestDto dto){
         Users currentUsers = getUsers(user.getUsername());
-        LocalDate newNotificationDate = LocalDate.now().plusDays(afterDay);
+        LocalDate newNotificationDate = LocalDate.now().plusDays(dto.getAfterDay());
 
-        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(problemNum,currentUsers);
+        Bookmark savedBookmark = bookmarkJpaRepository.findBookmarkByProblemNumAndUsers(dto.getProblemId(),currentUsers);
         Notification oldNotification = savedBookmark.getNotification();
         if (savedBookmark != null){
-            notificationService.checkAndDeleteNotification(oldNotification);
             savedBookmark.setNotification(notificationService.addBookmarkInNotification(currentUsers,savedBookmark,newNotificationDate));
-            bookmarkJpaRepository.save(savedBookmark);
+            bookmarkJpaRepository.saveAndFlush(savedBookmark);
+            notificationService.checkAndDeleteNotification(oldNotification);
         }else throw new RuntimeException("잘못된 요청입니다.(저장된 북마크가 아니라 수정이 불가함)");
 
     }

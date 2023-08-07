@@ -14,7 +14,7 @@
         "service_worker":"background.bundle.js"
     },
     "permissions":["storage"],
-    "host_permissions":["https://www.acmicpc.net/**","http://ec2-3-39-95-47.ap-northeast-2.compute.amazonaws.com:8080/**"],
+    "host_permissions":["https://www.acmicpc.net/**","http://ec2-3-39-95-47.ap-northeast-2.compute.amazonaws.com:8080/**","<all_urls>"],
     "content_scripts":[{
         "matches":["https://www.acmicpc.net/problem/*"],
         "exclude_matches":["https://www.acmicpc.net/problem/status/*","https://www.acmicpc.net/problem/history/*"],

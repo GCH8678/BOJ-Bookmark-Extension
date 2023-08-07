@@ -2,9 +2,8 @@ package com.ch.bojbm.domain.mail;
 
 
 import com.ch.bojbm.domain.bookmark.Bookmark;
-import com.ch.bojbm.domain.user.UserService;
 import com.ch.bojbm.global.auth.dto.EmailRequestDto;
-import com.ch.bojbm.global.redis.RedisUtil;
+import com.ch.bojbm.global.redis.RedisService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -27,8 +26,8 @@ public class EmailService {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine templateEngine;
 
-    private final RedisUtil redisUtil;
-    private final UserService userService;
+    private final RedisService redisService;
+    //private final UserService userService;
 
     /**
      * @info : 이메일로 인증코드 전송
@@ -80,8 +79,8 @@ public class EmailService {
     }
 
     private void sendAuthEmail(String email, String authKey){
-        String subject = "회원가입 인증번호입니다. ";
-        String text = " 회원 가입을 위한 인증번호는 "+ authKey + "입니다. <br>";
+        String subject = "[BOJ Bookmark Extension] 인증번호입니다.";
+        String text = " 인증번호는 "+ authKey + "입니다. <br>";
 
         try{
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -95,7 +94,7 @@ public class EmailService {
         }
         
         // 5분간 유효
-        redisUtil.setDataExpire(authKey,email,60*5L);
+        redisService.setDataExpire(authKey,email,1000*60*5L);
     }
 
 

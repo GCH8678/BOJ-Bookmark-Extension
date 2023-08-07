@@ -1,10 +1,11 @@
 package com.ch.bojbm.domain.bookmark;
 
-import com.ch.bojbm.domain.bookmark.dto.BookmarkCreateRequestDto;
-import com.ch.bojbm.domain.bookmark.dto.BookmarkUpdateRequestDto;
+import com.ch.bojbm.domain.bookmark.dto.*;
 import com.ch.bojbm.domain.notification.NotificationService;
+import com.ch.bojbm.domain.user.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/bookmark")
 @RestController
 @RequiredArgsConstructor
+@Secured("ROLE_USER")
 public class BookmarkController {
     private final BookmarkService bookmarkService;
     private final NotificationService notificationService;
@@ -30,8 +32,8 @@ public class BookmarkController {
      * @return bookmarkListResponseDto
      */
     @GetMapping("/list")
-    public ResponseEntity getBookmarkList(@AuthenticationPrincipal User user){
-        return ResponseEntity.ok(bookmarkService.getBookmarkList(user));
+    public ResponseEntity<BookmarkListResponseDto> getBookmarkList(@AuthenticationPrincipal UserDetailsImpl user){
+        return ResponseEntity.ok(bookmarkService.getAllBookmarks(user));
     }
 
     /**
@@ -40,7 +42,7 @@ public class BookmarkController {
      * @return TodayProblemsResponseDto
      */
     @GetMapping("/list/today")
-    public ResponseEntity getTodayProblemList(@AuthenticationPrincipal User user){
+    public ResponseEntity<TodayProblemsResponseDto> getTodayProblemList(@AuthenticationPrincipal UserDetailsImpl user){
         return ResponseEntity.ok(bookmarkService.getTodayProblemList(user));
     }
 
@@ -51,8 +53,8 @@ public class BookmarkController {
      * @return message
      */
     @PostMapping("")
-    public ResponseEntity addBookmark(@RequestBody BookmarkCreateRequestDto bookmarkCreateRequestDto, @AuthenticationPrincipal User user){
-        bookmarkService.addBookmark(user,bookmarkCreateRequestDto.getProblemId(), bookmarkCreateRequestDto.getAfterday());
+    public ResponseEntity addBookmark(@RequestBody BookmarkCreateRequestDto bookmarkCreateRequestDto, @AuthenticationPrincipal UserDetailsImpl user){
+        bookmarkService.addBookmark(user,bookmarkCreateRequestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -63,9 +65,8 @@ public class BookmarkController {
      * @return message
      */
     @PutMapping("")
-    public synchronized ResponseEntity updateBookmark(@RequestBody BookmarkUpdateRequestDto bookmarkUpdateRequestDto, @AuthenticationPrincipal User user){
-        bookmarkService.deleteBookmark(user,bookmarkUpdateRequestDto.getProblemId());
-        bookmarkService.addBookmark(user,bookmarkUpdateRequestDto.getProblemId(), bookmarkUpdateRequestDto.getAfterday());
+    public synchronized ResponseEntity updateBookmark(@RequestBody BookmarkUpdateRequestDto bookmarkUpdateRequestDto, @AuthenticationPrincipal UserDetailsImpl user){
+        bookmarkService.updateBookmark(user,bookmarkUpdateRequestDto);
         return ResponseEntity.ok().build();
     }
 
@@ -77,9 +78,9 @@ public class BookmarkController {
      * @return bollean
      */
     @GetMapping("/{problemNum}")
-    public ResponseEntity checkBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal User user){
+    public ResponseEntity<IsBookmarkedDto> checkBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal UserDetailsImpl user){
         boolean isBookmarked = bookmarkService.checkBookmark(user,problemNum);
-        return ResponseEntity.ok(isBookmarked);
+        return ResponseEntity.ok(IsBookmarkedDto.builder().isBookmarked(isBookmarked).build());
     }
 
 
@@ -90,7 +91,7 @@ public class BookmarkController {
      * @return message
      */
     @DeleteMapping("/{problemNum}")
-    public synchronized ResponseEntity deleteBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal User user){
+    public ResponseEntity deleteBookmark(@PathVariable Integer problemNum, @AuthenticationPrincipal UserDetailsImpl user){
         bookmarkService.deleteBookmark(user,problemNum);
         return ResponseEntity.ok().build();
     }

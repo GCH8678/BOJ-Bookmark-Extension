@@ -3,11 +3,13 @@ package com.ch.bojbm.global.auth.dto;
 import lombok.*;
 
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access=AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class TokenDto {
-    private String grantType; //bearer
     private String accessToken; //
-    private Long Expiration; // 기한
+    private Long accessTokenExpiration; // 기한
+    private String refreshToken; //
+    private Long refreshTokenExpiration; // 기한
+
 }

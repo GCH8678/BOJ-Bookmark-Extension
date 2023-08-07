@@ -15,14 +15,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Button from '@mui/material/Button';
 
 // DatePicker용 import
-import Modal from '@mui/material/Modal';
-import Paper from '@mui/material/Paper';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
-import dayjs from 'dayjs';
-import CalendarIcon from '@mui/icons-material/EventAvailableSharp';
+import AfterDayDatePicker from './AfterDatePicker';
 
 const AddBookmarkButton = ({ problemId, setIsBookmarked }) => {
   const [afterday, setAfterDay] = useState(7);
@@ -58,85 +51,6 @@ const AddBookmarkButton = ({ problemId, setIsBookmarked }) => {
 
   const handleClose = () => {
     setModalOpen(false);
-  };
-
-  const AfterDayDatePicker = () => {
-    const [useDatePicker, setUseDatePicker] = useState(false);
-    const [selectDay, setSelectDay] = useState(dayjs());
-
-    const handleDatePickerOpen = () => {
-      setUseDatePicker(true);
-    };
-    const handleDatePickerClose = () => {
-      setUseDatePicker(false);
-    };
-
-    const now = dayjs();
-    const today = dayjs(now.format('YYYY-MM-DD'));
-
-    const setCalcuateAfterDay = () => {
-      // console.log(selectDay);
-      setAfterDay(selectDay.diff(today, 'd'));
-      handleDatePickerClose();
-    };
-
-    return (
-      <>
-        <IconButton
-          aria-label="datePicker"
-          onClick={handleDatePickerOpen}
-          size="large"
-        >
-          <CalendarIcon
-            fontSize="large"
-            sx={{ width: '3rem', height: '3rem' }}
-          />
-        </IconButton>
-        <Box sx={{ fontSize: 20 }}>
-          <Modal
-            sx={{
-              position: 'fixed',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-            open={useDatePicker}
-            onClose={handleDatePickerClose}
-            aria-labelledby="child-modal-title"
-            aria-describedby="child-modal-description"
-          >
-            <Paper sx={{ minWidth: 100, minHeight: 50 }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DateCalendar']}>
-                  <DateCalendar
-                    defaultValue={today}
-                    onChange={(selectDay) => setSelectDay(selectDay)}
-                    disablePast
-                    styled={{ fontSize: 15 }}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
-              <Box
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  paddingBottom: '10px',
-                  justifyContent: 'center',
-                }}
-              >
-                <Button
-                  onClick={setCalcuateAfterDay}
-                  variant="outlined"
-                  sx={{ fontSize: 13 }}
-                >
-                  확인
-                </Button>
-              </Box>
-            </Paper>
-          </Modal>
-        </Box>
-      </>
-    );
   };
 
   const AfterDaySelect = () => {
@@ -215,7 +129,7 @@ const AddBookmarkButton = ({ problemId, setIsBookmarked }) => {
             sx={{ display: 'flex', flexWrap: 'wrap', fontSize: 20 }}
           >
             <AfterDaySelect />
-            <AfterDayDatePicker />
+            <AfterDayDatePicker setAfterDay={setAfterDay} />
           </Box>
         </DialogContent>
         <DialogActions>

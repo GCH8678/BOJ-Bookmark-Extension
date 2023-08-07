@@ -3,6 +3,7 @@ package com.ch.bojbm.domain.notification;
 import com.ch.bojbm.domain.bookmark.Bookmark;
 import com.ch.bojbm.domain.mail.EmailMessageDto;
 import com.ch.bojbm.domain.mail.EmailService;
+import com.ch.bojbm.domain.user.UserDetailsImpl;
 import com.ch.bojbm.domain.user.Users;
 import com.ch.bojbm.domain.user.UsersRepository;
 import jakarta.mail.MessagingException;
@@ -30,16 +31,13 @@ public class NotificationService {
     private final EmailService emailService;
 
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void checkAndDeleteNotification(Notification notification){
-        Set<Bookmark> bookmarksAtNotificationDate = notification.getBookmarks();
-        if(bookmarksAtNotificationDate.size()==1){
-            notificationRepository.deleteById(notification.getId());
-        }
+        notificationRepository.deleteNotificationByIdAndBookmarks_Empty(notification.getId());
     }
 
     @Transactional(readOnly = true)
-    public Notification getTodayNotification(User user){
+    public Notification getTodayNotification(UserDetailsImpl user){
         LocalDate today = LocalDate.now();
         Users currentUsers = getUsers(user.getUsername());
         return notificationRepository.findNotificationByUsersAndNotificationDate(currentUsers,today);
